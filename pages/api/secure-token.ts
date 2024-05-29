@@ -11,7 +11,7 @@ export default async function handler(
   const key_secret = key.privateKey;
   const request_method = "POST";
   const host = "api.developer.coinbase.com";
-  const request_path = "/onramp/v1/onramp/token";
+  const request_path = "/onramp/v1/token";
   const url = `https://${host}${request_path}`;
 
   const uri = request_method + " " + host + request_path;
