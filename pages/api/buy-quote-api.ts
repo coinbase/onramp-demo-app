@@ -2,6 +2,15 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { SignOptions, sign } from "jsonwebtoken";
 import crypto from "crypto";
 
+type BuyQuoteRequest = {
+  purchase_currency: string;
+  payment_amount: string;
+  payment_currency: string;
+  payment_method: string;
+  country: string;
+  payment_network?: string;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -11,8 +20,9 @@ export default async function handler(
   const key_secret = key.privateKey;
   const request_method = "POST";
   const host = "api.developer.coinbase.com";
-  const request_path = "/onramp/v1/token";
+  const request_path = "/onramp/v1/buy/quote";
   const url = `https://${host}${request_path}`;
+
   const uri = request_method + " " + host + request_path;
 
   const payload = {
@@ -36,18 +46,19 @@ export default async function handler(
     key_secret,
     signOptions,
   );
-  
+
+  console.log(req.body)
   const reqBody = JSON.parse(req.body);
+  const body: BuyQuoteRequest = {
+    purchase_currency: reqBody.purchase_currency,
+    payment_amount: reqBody.payment_amount,
+    payment_currency: reqBody.payment_currency,
+    payment_method: reqBody.payment_method,
+    country: reqBody.country,
+    payment_network: reqBody.payment_network,
+  }
 
-  const body = {
-    destination_wallets: [
-      {
-        address: reqBody.ethAddress,
-        blockchains: ["base", "ethereum"],
-      },
-    ],
-  };
-
+  console.log(body);
   fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
@@ -59,7 +70,7 @@ export default async function handler(
         console.error("Error:", json.message);
         res.status(500).json({error: json.message});    
       } else {
-        res.status(200).json({ token: json.token });
+        res.status(200).json(json);
       }
     })
     .catch((error) => {

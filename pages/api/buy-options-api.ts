@@ -6,13 +6,22 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const reqBody = JSON.parse(req.body);
+  const body = {
+    country: reqBody.country,
+    subdivision: reqBody.subdivision,
+  }
+
   const key = await import('../../api_keys/cdp_api_key.json');
   const key_name = key.name;
   const key_secret = key.privateKey;
-  const request_method = "POST";
+  const request_method = "GET";
   const host = "api.developer.coinbase.com";
-  const request_path = "/onramp/v1/token";
-  const url = `https://${host}${request_path}`;
+  const request_path = "/onramp/v1/buy/options";
+  const url = `https://${host}${request_path}?&country=${body.country}&subdivision=${body.subdivision}`;
+
+  
+
   const uri = request_method + " " + host + request_path;
 
   const payload = {
@@ -37,20 +46,10 @@ export default async function handler(
     signOptions,
   );
   
-  const reqBody = JSON.parse(req.body);
-
-  const body = {
-    destination_wallets: [
-      {
-        address: reqBody.ethAddress,
-        blockchains: ["base", "ethereum"],
-      },
-    ],
-  };
+  console.log(jwt);
 
   fetch(url, {
-    method: "POST",
-    body: JSON.stringify(body),
+    method: request_method,
     headers: { Authorization: "Bearer " + jwt },
   })
     .then((response) => {console.log(response); return response.json()})
@@ -59,7 +58,7 @@ export default async function handler(
         console.error("Error:", json.message);
         res.status(500).json({error: json.message});    
       } else {
-        res.status(200).json({ token: json.token });
+        res.status(200).json(json);
       }
     })
     .catch((error) => {
