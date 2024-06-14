@@ -3,7 +3,7 @@ import { Input } from "@nextui-org/input";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GenTokenAndURL from "./GenTokenAndURL";
 import { Divider } from "@nextui-org/divider";
-import { Card } from "@nextui-org/react";
+import { Card, Link } from "@nextui-org/react";
 import {Select, SelectItem} from "@nextui-org/select";
 import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse } from "../utils/types";
 import { generateBuyOptions, generateBuyQuote } from "../utils/queries";
@@ -115,7 +115,7 @@ export default function GenBuyQuote () {
     }, [buyOptionsResponse, buyQuoteParams.payment_currency]);
 
     /* Change list of payment networks on re-render when new PURCHASE currency is changed */
-    const payment_networks_list = useMemo(() => {
+    const purchase_networks_list = useMemo(() => {
         const networks = buyOptionsResponse?.purchase_currencies.find(currency => currency.symbol === buyQuoteParams.purchase_currency)?.networks.map(method => ({name: method.name}));
         return networks || [];
     }, [buyOptionsResponse, buyQuoteParams.purchase_currency]);
@@ -131,7 +131,9 @@ export default function GenBuyQuote () {
     }, [buyOptionsResponse, buyQuoteParams.payment_currency, buyQuoteParams.payment_method])
 
 
-    console.log(payment_methods_list, payment_networks_list, payment_amount_limits);
+    console.log(payment_methods_list, purchase_networks_list, payment_amount_limits);
+
+    console.log(buyQuoteParams.purchase_currency === '');
 
     return (
         <div>
@@ -140,24 +142,30 @@ export default function GenBuyQuote () {
                 {/* Generate Buy Configurations Card Box */}
                 <BuyConfigBox />
 
+                <Divider className="mt-20" />
+
                 {/* Buy Options Card Box */}
-                <Card id="buyOptionsHeader">
+                <Card id="buyOptionsHeader" >
                     {/* Buy Options Header */}
-                    <div className="flex flex-col ml-10 mt-10 gap-1">
+                    <div className="flex flex-col p-10 pb-5 gap-1">
                         <h1 
                             onClick={() => scrollToHeader("buyOptionsHeader")} 
                             className="font-bold underline"> 
-                            GENERATE BUY OPTIONS: 
+                            Generate Buy Options: 
                         </h1>
-                        <h2> 1. Generate the payment and purchase currency options for your specific geographic region. </h2>
-                        <h2> 2. Input your country / subdivision, click `GENERATE BUY OPTIONS`. </h2>
-                        <h2> 3. Your payment / purchase options are listed in the response box! Country will be used below in quote generation. </h2>
+                        <h2> The <Link href="https://docs.cdp.coinbase.com/onramp/docs/api-configurations/" isExternal> Buy Options API </Link> returns the supported fiat currencies and available crypto assets that can be passed into the Buy Quote API. </h2>
+                    </div>
+
+                    <div className="flex flex-col ml-10 gap-1 w-2/5">
+                        <h2> 1. Input your <b>country</b> and optionally the <b>subdivision</b>, then click <b>'Generate Buy Options'</b>. </h2>
+                        <h2> 2. The response will show the payment and purchase options in your selected country/subdivision. Your selected country will be passed into the Buy Quote API. </h2>
                     </div>
                     
                     
                     {/* Buy Options API Request Parameters & Button to generate Buy Options */}
                     <section className="flex flex-row gap-10 p-10">
-                        <div className="flex flex-col space-y-5 w-full">
+                        <div className="flex flex-col space-y-4 w-full">
+                            <h2 className="font-bold underline"> Enter Request Parameters </h2>
                             <Input
                                 type="text"
                                 name="country"
@@ -175,12 +183,12 @@ export default function GenBuyQuote () {
                                 value={buyOptionsParams.subdivision}
                                 onChange={(value) => {onChangeBuyOptionsParams(value)}}
                             />
-                            <Button onClick={buyOptionsWrapper}> Generate Buy Options </Button>
+                            <Button onClick={buyOptionsWrapper}> Generate buy options </Button>
                         </div>
                         
-                        <div className="flex flex-col w-full gap-2 size-max">
-                            <h2 className="font-bold"> Buy Options Response </h2>
-                            <Card className="justify-top p-5" title="Buy Option Response">
+                        <div className="flex flex-col space-y-4 w-full">
+                            <h2 className="font-bold underline"> Buy Options Response </h2>
+                            <Card className="flex-auto justify-top size-full p-5" title="Buy Option Response">
                                 {buyOptionsResponse && <ReactJson collapsed={true} src={buyOptionsResponse} />} 
                             </Card>
                         </div>
@@ -194,17 +202,26 @@ export default function GenBuyQuote () {
             <div className="flex flex-col">
                 <Card id="buyQuoteHeader">
                     {/* Buy Quote Header */}
-                    <div className="flex flex-col ml-10 mt-10 gap-1">
-                        <h1 onClick={() => scrollToHeader("buyQuoteHeader")} className="font-bold underline"> GENERATE BUY QUOTE: </h1>
-                        <h2> 1. Generate buy options above to specify the country in the quote below </h2>   
-                        <h2> 2. Select a payment currency - then, select a payment method. </h2>
-                        <h2> 3. Select a purchase currency - then, if necessary, select a payment network </h2>
-                        <h2> 4. Enter your desired amount of currency, and get your quote! </h2>
-                        <h2> 5. Your quoteID from this potential transaction will be populated into the one-time Onramp URL generated down below. Use this to prefill parameters in user sessions. </h2>
+                    <div className="flex flex-col p-10 pb-5 gap-1">
+                        <h1 onClick={() => scrollToHeader("buyQuoteHeader")} className="font-bold underline"> Generate Buy Quote: </h1>
+                        <h2> 
+                            The <Link href="https://docs.cdp.coinbase.com/onramp/docs/api-generating-quotes/" isExternal> Buy Quote API </Link> provides clients with a quote based on the asset the user would like to purchase, 
+                            the network they plan to purchase it on, the dollar amount of the payment, the payment currency, 
+                            the payment method, and country of the user. 
+                        </h2>
+                    </div>
+                    <div className="flex flex-col ml-10 gap-1 w-2/5">
+                        <h2> 1. <b>'Generate Buy Options'</b> in the section above to specify the country parameter. </h2>   
+                        <h2> 2. Select a <b>payment currency</b>, then select a <b>payment method</b> based on the available options. </h2>
+                        <h2> 3. Select a <b>purchase currency</b>, then optionally select a <b>purchase network</b>. </h2>
+                        <h2> 4. Enter the <b>fiat payment amount</b> you wish to spend on this transaction. Then, click <b> 'Generate Buy Quote' </b>. </h2>
+                        <h2> 5. The <b>quoteID</b> and Buy Quote request parameters will be passed into your one-time Coinbase Onramp URL in the section below.</h2>
                     </div>
                     <section className="flex flex-row gap-10 p-10">
                         {/* Country, Purchase Currency, Payment Currency, Payment Method, Network, Amount Options */}
-                        <div className="flex flex-col space-y-5 w-full">
+                        <div className="flex flex-col space-y-4 w-full">
+
+                            <h2 className="font-bold underline"> Enter Request Parameters </h2>
                             <Input
                                 type="text"
                                 label="Country"
@@ -223,47 +240,49 @@ export default function GenBuyQuote () {
                                     onChange={(value) => {onChangeBuyQuotesParams(value)}}
                                     isRequired
                                     items={buyOptionsResponse?.payment_currencies || []}
+                                    disabled={buyQuoteParams.country === ''}
                                     >
                                     {(curr) => <SelectItem key={curr.id}>{curr.id}</SelectItem>}
                                 </Select>
                                 <Select
                                     className="flex w-full"
-                                    name="purchase_currency"
-                                    label="Purchase Currency"
-                                    placeholder="Select a purchase currency"
-                                    onChange={(value) => {onChangeBuyQuotesParams(value)}}
+                                    name="payment_method"
+                                    label="Payment Method"
+                                    placeholder="Select a payment method"
                                     isRequired
-                                    items={buyOptionsResponse?.purchase_currencies || []}
-                                    >
-                                    {(curr) => <SelectItem key={curr.symbol}>{curr.symbol}</SelectItem>}
+                                    disabled={buyQuoteParams.payment_currency === ''}
+                                    onChange={(value) => {onChangeBuyQuotesParams(value);}}
+                                    items={payment_methods_list}
+                                >
+                                    {(method) => <SelectItem key={method.name}>{method.name}</SelectItem>}
                                 </Select>
+                                
                             </div>
 
                             <div className="flex flex-row justify-between gap-4">
                                 <Select
-                                        className="flex w-full"
-                                        name="payment_method"
-                                        label="Payment Method"
-                                        placeholder="Select a payment method"
-                                        onChange={(value) => {onChangeBuyQuotesParams(value);}}
-                                        items={payment_methods_list}
-                                        isRequired
+                                    className="flex w-full"
+                                    name="purchase_currency"
+                                    label="Purchase Currency"
+                                    placeholder="Select a purchase currency"
+                                    isRequired
+                                    disabled={buyQuoteParams.country === ''}
+                                    onChange={(value) => {onChangeBuyQuotesParams(value)}}
+                                    items={buyOptionsResponse?.purchase_currencies || []}
                                     >
-                                        {(method) => <SelectItem key={method.name}>{method.name}</SelectItem>}
+                                    {(curr) => <SelectItem key={curr.symbol}>{curr.symbol}</SelectItem>}
                                 </Select>
-
-
-                                <div className="flex w-full">
-                                    <Select
-                                        name="payment_network"
-                                        label="Payment Network"
-                                        placeholder="Select payment network (optional)"
-                                        onChange={(value) => {onChangeBuyQuotesParams(value)}}
-                                        items={payment_networks_list}
-                                        >
-                                        {((network) => <SelectItem key={network.name}>{network.name}</SelectItem>)}
-                                    </Select>
-                                </div>
+                                <Select
+                                    className="flex w-full"
+                                    name="purchase_network"
+                                    label="Purchase Network"
+                                    placeholder="Select purchase network (optional)"
+                                    onChange={(value) => {onChangeBuyQuotesParams(value)}}
+                                    items={purchase_networks_list}
+                                    disabled={buyQuoteParams.purchase_currency === ''}
+                                    >
+                                    {((network) => <SelectItem key={network.name}>{network.name}</SelectItem>)}
+                                </Select>
                             </div>
 
                             <Input  
@@ -285,9 +304,9 @@ export default function GenBuyQuote () {
                         </div>
 
                         {/* Buy Quote Response */}
-                        <div className="flex flex-col w-full gap-2 size-max">
-                            <h2 className="font-bold"> Buy Quote Response </h2>
-                            <Card className="justify-top p-5" title="Buy Option Response">
+                        <div className="flex flex-col space-y-4 w-full">
+                            <h2 className="font-bold underline"> Buy Quote Response </h2>
+                            <Card className="flex-auto justify-top size-full p-5" title="Buy Quote Response">
                                 {buyQuoteResponse && <ReactJson collapsed={true} src={buyQuoteResponse} />} 
                             </Card>
                         </div>

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 
-import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
+import {Tabs, Tab, Card, CardBody, Link} from "@nextui-org/react";
 import GenTokenAndURL from "./apiExamples/GenTokenAndURL";
 import GenBuyQuote from "./apiExamples/GenBuyQuote";
 
@@ -17,33 +17,34 @@ export default function Home() {
           <div className="inline-block max-w-lg text-left">
             <p className="text-lg">Instructions:</p>
             <p className="text-lg">
-              1. Go to the CDP portal and create a project.{" "}
+              1. Go to <Link href="https://portal.cdp.coinbase.com/products/onramp" isExternal> Onramp </Link> in your Coinbase Developer Platform and configure your integration{" "}
             </p>
             <p className="text-lg">
-              2. Click on the Onramp tab and configure your integration.{" "}
+              2. Navigate to the <Link href="https://portal.cdp.coinbase.com/access/api" isExternal> API Keys </Link> tab and download a private key.{" "}
             </p>
             <p className="text-lg">
-              3. Navigate to the API keys page and download a private key. Copy
-              the private key file to api_keys/cdp_api_key.json. 
+              3.  Copy the private key file to api_keys/cdp_api_key.json inside your onramp-demo-app repo.
             </p>
           </div>
         </div>
+        <div>
           <Image
             src="/cdp.svg"
             alt="Next.js Logo"
-            width={500}
+            width={200}
             height={37}
             priority
-            className="flex flex-col mr-10"
+            className="flex flex-col"
           />
+          </div>
       </Card>
 
       <div className="flex w-full flex-col gap-5">
       <Tabs aria-label="Options">
-        <Tab key="genToken" title="Generate Onramp Token + URL">
+        <Tab key="genToken" title="Generate Onramp URL">
             <GenTokenAndURL />
         </Tab>
-        <Tab key="buyQuote" title="Generate Buy Quote">
+        <Tab key="buyQuote" title="Generate Onramp Aggregator URL">
           <GenBuyQuote />
         </Tab>
       </Tabs>

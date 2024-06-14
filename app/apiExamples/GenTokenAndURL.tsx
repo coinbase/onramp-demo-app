@@ -4,9 +4,8 @@ import { Button } from "@nextui-org/button";
 import { Textarea } from "@nextui-org/input";
 import { Divider } from "@nextui-org/divider";
 import { useState, useCallback, useMemo } from "react";
-import Image from "next/image";
 
-import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
+import {Tabs, Tab, Card, CardBody, Link} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
 
 export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean}) {
@@ -32,7 +31,7 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText 
   const linkReady = useMemo(() => secureToken.length > 0, [secureToken]);
 
   const link = useMemo(() => {
-    if (!linkReady) return "Create a secure token to generate a URL";
+    if (!linkReady) return "Generate a secure token first to create your one time URL";
     return (
       "https://pay.coinbase.com/buy/select-asset?sessionToken=" + secureToken + 
       (aggregatorInputs?.quoteID ? "&quoteId=" + aggregatorInputs.quoteID : "") +
@@ -49,22 +48,32 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText 
   }, [link]);
 
   const helperText = showBuyQuoteURLText ?
-  <h2> This link will be prepopulated with the quoteID and input parameters to the Buy Quote API, using query string parameters <br/> One-Click-Buy - the link takes you straight to the transaction, no selections needed! </h2>:
-  <h2>Generate a secure one time URL to launch an Onramp session!</h2>
+  <h2> The generated link initializes the Coinbase Onramp URL with the appropriate parameters to execute that buy in just one click for the user. </h2>:
+  <h2>Generate a secure one time URL to launch an Onramp session.</h2>
+
+  const buyQuoteURLDirections = (
+    <div className="flex flex-col ml-10 gap-1 w-2/5">
+      <h2 > 1. Generate a Buy Quote in the section above to get the input parameters to create a secure Onramp URL. </h2>
+      <h2> 2. Enter a <b>destination wallet address</b> and then click <b>'Generate secure token'</b>. </h2>
+      <h2> 3. Click <b> Launch Onramp </b> to see the one-click buy experience for your users. </h2>
+    </div>
+      
+  )
 
   return ( 
     <Card>
-      <div className="flex flex-col p-10 -mb-20 gap-1">
-        <h1 className="font-bold underline"> GENERATE SECURE ONRAMP TOKEN + URL: </h1>
+      <div className="flex flex-col p-10 pb-5 gap-1">
+        <h1 className="font-bold underline"> <Link color="foreground" href="https://docs.cdp.coinbase.com/onramp/docs/api-initializing/" isExternal> Generate Secure Onramp Token & URL: </Link> </h1>
         {helperText}
       </div>
-    <section className="flex flex-row items-center gap-5 p-10">
-      
-      <div className="flex-col space-y-5">
-      <div style={{ width: "600px" }} className="flex">
+      {showBuyQuoteURLText && buyQuoteURLDirections}
+
+    <section className="flex flex-row justify-between gap-10 p-10 pt-5">
+      <div className="flex flex-col space-y-5 w-full">
         <Input
+          className="flex w-full"
           type="text"
-          label="ETH Address"
+          label="Destination Wallet Address"
           placeholder="Enter your address"
           value={ethAddress}
           onValueChange={(value) => {
@@ -73,39 +82,35 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText 
           }}
           isRequired
         />
+        <Button
+          onClick={generateSecureToken}
+          isDisabled={ethAddress.length === 0}
+        >
+          Generate secure token
+        </Button>
+
+        {secureToken.length > 0 && (
+          <>
+            <h4 className="text-medium">Onramp token:</h4>
+            <Code>{secureToken}</Code>
+          </>
+        )}
       </div>
 
-      <Button
-        onClick={generateSecureToken}
-        isDisabled={ethAddress.length === 0}
-      >
-        Generate secure token
-      </Button>
 
-      {secureToken.length > 0 && (
-        <>
-          <h4 className="text-medium">Onramp token:</h4>
-          <Code>{secureToken}</Code>
-        </>
-      )}
+      <div className="flex flex-col space-y-5 w-full">
+        <Textarea
+          className="flex-auto"
+          isReadOnly
+          label="Onramp URL"
+          variant="bordered"
+          value={link}
+        />
+        <Button isDisabled={!linkReady} color="primary" onClick={launch}>
+          Launch Onramp
+        </Button>
       </div>
 
-      <Divider orientation="vertical"/>
-
-
-      <div className="flex-col space-y-5 w-full">
-      <Textarea
-        isReadOnly
-        label="Onramp URL"
-        variant="bordered"
-        labelPlacement="outside"
-        value={link}
-      />
-
-      <Button isDisabled={!linkReady} color="primary" onClick={launch}>
-        Launch CB Onramp
-      </Button>
-      </div>
     </section>
     </Card>
 )}

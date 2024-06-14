@@ -1,7 +1,8 @@
-import { Button, Card } from "@nextui-org/react";
+import { Button, Card, Link } from "@nextui-org/react";
 import { useState } from "react";
 import ReactJson from "react-json-view";
 import { generateBuyConfig } from "../utils/queries";
+import { scrollToHeader } from "../utils/helpers";
 
 
 export function BuyConfigBox() {
@@ -19,12 +20,12 @@ export function BuyConfigBox() {
     }
     
     return (
-        <Card className="flex flex-col p-10">
-            <h1 className="font-bold underline mb-1"> GENERATE BUY CONFIGURATIONS: </h1>
-            <h2>Generate different buy configurations for Onramp transactions</h2>
+        <Card id="buyConfigHeader" className="flex flex-col p-10">
+            <h1 className="font-bold underline mb-1" onClick={() => scrollToHeader("buyConfigHeader")}> Generate Buy Config: </h1>
+            <h2>The <Link isExternal href="https://docs.cdp.coinbase.com/onramp/docs/api-configurations/#buy-options"> Buy Config API </Link> returns the list of countries supported by Coinbase Onramp, and the payment methods available in each country.</h2>
         
         <div className="flex flex-row w-full justify-center gap-10 mt-5">
-            <Button className="w-full" onClick={buyConfigurationWrapper}> Generate Buy Configuration </Button>
+            <Button className="w-full" onClick={buyConfigurationWrapper}> Generate Buy Config </Button>
             <Card className="w-full p-5">
                 {buyConfig && <ReactJson collapsed={true} src={buyConfig} />} 
             </Card>
