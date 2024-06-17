@@ -3,33 +3,30 @@ import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteRespons
 
 
 export async function generateBuyConfig () {
-    console.log("generateBuyConfig");
     try {
         const response = await fetch("/api/buy-config-api", {
             method: "GET",
         });
         if (!response.ok) {
+            alert('Error fetching buy config');
             throw new Error('Failed to fetch');
         }
         const json = await response.json();
         return json;
     } catch (error) {
-        console.error('Error fetching buy config:', error);
+        alert('Error fetching buy config:' + `${error}`);
         throw error;
     }
 };
 
 export async function generateBuyOptions({country, subdivision}: BuyOptionsRequest) {
-    console.log("generateBuyOptions");
-    if (!country) {
-        alert("Please fill out all required fields");
-    }
     try {
       const response = await fetch("/api/buy-options-api", {
         method: "POST",
         body: JSON.stringify({ country, subdivision}),
       });
       if (!response.ok) {
+        alert("Failed to fetch buy options");
         throw new Error('Failed to fetch buy options');
       }
       const json: BuyOptionsResponse = await response.json();
@@ -39,17 +36,12 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
   
       return { json, payment_currencies, purchase_currencies };
     } catch (error) {
-      console.error('Error fetching buy options:', error);
+      alert('Error fetching buy options:' + `${error}`);
       throw error;
     }
   };
 
   export async function generateBuyQuote(request: BuyQuoteRequest) {
-    if (!request.purchase_currency || !request.payment_currency || !request.payment_method || !request.payment_amount || !request.country) {
-      alert("Please fill out all required fields");
-      return; // Return early if required fields are not filled
-    }
-  
     try {
       console.log("generateBuyQuote");
       const response = await fetch("/api/buy-quote-api", {

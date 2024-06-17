@@ -5,10 +5,10 @@ import { Textarea } from "@nextui-org/input";
 import { Divider } from "@nextui-org/divider";
 import { useState, useCallback, useMemo } from "react";
 
-import {Tabs, Tab, Card, CardBody, Link} from "@nextui-org/react";
+import {Card, Link} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
 
-export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean}) {
+export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
   const [secureToken, setSecureToken] = useState("");
   const [ethAddress, setEthAddress] = useState("");
 
@@ -16,17 +16,18 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText 
     console.log("generateSecureToken");
     fetch("/api/secure-token", {
       method: "POST",
-      body: JSON.stringify({ ethAddress }),
+      body: JSON.stringify({ ethAddress, blockchains}),
     }) 
       .then(async (response) => {
         const json = await response.json();
         if(response.ok) {
           setSecureToken(json.token);
         } else {
+          alert("Error generating token: "+json.error);
           console.log("Error generating token: "+json.error);
         }
       });
-  }, [ethAddress]);
+  }, [ethAddress, blockchains]);
 
   const linkReady = useMemo(() => secureToken.length > 0, [secureToken]);
 
@@ -54,7 +55,7 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText 
   const buyQuoteURLDirections = (
     <div className="flex flex-col ml-10 gap-1 w-2/5">
       <h2 > 1. Generate a Buy Quote in the section above to get the input parameters to create a secure Onramp URL. </h2>
-      <h2> 2. Enter a <b>destination wallet address</b> and then click <b>'Generate secure token'</b>. </h2>
+      <h2> 2. Enter a <b>destination wallet address</b> and then click <b>&lsquo;Generate secure token&rsquo;</b>. </h2>
       <h2> 3. Click <b> Launch Onramp </b> to see the one-click buy experience for your users. </h2>
     </div>
       

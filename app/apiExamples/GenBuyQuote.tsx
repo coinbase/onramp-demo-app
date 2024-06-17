@@ -3,16 +3,13 @@ import { Input } from "@nextui-org/input";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GenTokenAndURL from "./GenTokenAndURL";
 import { Divider } from "@nextui-org/divider";
-import { Card, Link } from "@nextui-org/react";
+import { Accordion, AccordionItem, Card, Link, Tooltip } from "@nextui-org/react";
 import {Select, SelectItem} from "@nextui-org/select";
 import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse } from "../utils/types";
 import { generateBuyOptions, generateBuyQuote } from "../utils/queries";
 import ReactJson from "react-json-view";
 import { BuyConfigBox } from "./BuyConfigBox";
 import { scrollToHeader } from "../utils/helpers";
-import { networkInterfaces } from "os";
-
-const PaymentMethodOptions = ['CRYPTO_ACCOUNT', 'FIAT_ACCOUNT', 'CARD', 'ACH_BANK_ACCOUNT', 'APPLE_PAY'];
 
 type Item = {
     name: string;
@@ -67,12 +64,17 @@ export default function GenBuyQuote () {
     */
 
     const buyOptionsWrapper = useCallback(async () => {
+        if (!buyOptionsParams.country) {
+            alert("Please fill out all required fields");
+            return;
+        }
         if (buyOptionsParams.country + buyOptionsParams.subdivision === prevCountrySubdiv.current) { // prevent re-fetching same data
             return;
         }
+
         const response = await generateBuyOptions(buyOptionsParams);
         try {
-            setBuyOptionsResponse(response.json);
+            setBuyOptionsResponse(response?.json);
             setBuyQuoteParams({
                 ...emptyBuyQuoteParams,
                 country: buyOptionsParams.country,
@@ -84,29 +86,23 @@ export default function GenBuyQuote () {
         }
     }, [buyOptionsParams]);
 
-
-    function useLogFunctionRecreation(func, dependencies) {
-        const lastFuncRef = useRef();
-        
-        useEffect(() => {
-            if (lastFuncRef.current !== func) {
-            console.log('Function has been recreated!');
-            lastFuncRef.current = func;
-            }
-        }, [func, ...dependencies]);
-    }
-
     const buyQuoteWrapper = useCallback(async () => {
+        if (!buyQuoteParams.purchase_currency || !buyQuoteParams.payment_currency || !buyQuoteParams.payment_method || !buyQuoteParams.payment_amount || !buyQuoteParams.country) {
+            alert("Please fill out all required fields");
+            return;
+        }
+        if (buyQuoteParams.payment_amount < payment_amount_limits.min || buyQuoteParams.payment_amount > payment_amount_limits.max) {
+            alert(`Payment amount for currency '${buyQuoteParams.payment_currency} - ${buyQuoteParams.payment_method}' must be between ${payment_amount_limits.min} and ${payment_amount_limits.max}`);
+            return;
+        }
+
         const response = await generateBuyQuote(buyQuoteParams);
         try {
-            console.log(response);
             setBuyQuoteResponse(response);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }, [buyQuoteParams]);
-
-    useLogFunctionRecreation(buyQuoteWrapper, [buyQuoteParams]);
 
     /* Change list of payment methods on re-render when new PAYMENT currency is changed */
     const payment_methods_list = useMemo(() => {
@@ -120,6 +116,7 @@ export default function GenBuyQuote () {
         return networks || [];
     }, [buyOptionsResponse, buyQuoteParams.purchase_currency]);
 
+    /* Change payment amount limits on re-render when changing PAYMENT currency & PAYMENT METHOD */
     const payment_amount_limits = useMemo(() => {
         const limits = buyOptionsResponse?.payment_currencies
                 .find(currency => currency.id === buyQuoteParams.payment_currency)
@@ -129,11 +126,6 @@ export default function GenBuyQuote () {
             max: limits?.max || '',
         };
     }, [buyOptionsResponse, buyQuoteParams.payment_currency, buyQuoteParams.payment_method])
-
-
-    console.log(payment_methods_list, purchase_networks_list, payment_amount_limits);
-
-    console.log(buyQuoteParams.purchase_currency === '');
 
     return (
         <div>
@@ -157,7 +149,7 @@ export default function GenBuyQuote () {
                     </div>
 
                     <div className="flex flex-col ml-10 gap-1 w-2/5">
-                        <h2> 1. Input your <b>country</b> and optionally the <b>subdivision</b>, then click <b>'Generate Buy Options'</b>. </h2>
+                        <h2> 1. Input your <b>country</b> and optionally the <b>subdivision</b>, then click <b>&lsquo;Generate Buy Options&rsquo;</b>. </h2>
                         <h2> 2. The response will show the payment and purchase options in your selected country/subdivision. Your selected country will be passed into the Buy Quote API. </h2>
                     </div>
                     
@@ -183,7 +175,7 @@ export default function GenBuyQuote () {
                                 value={buyOptionsParams.subdivision}
                                 onChange={(value) => {onChangeBuyOptionsParams(value)}}
                             />
-                            <Button onClick={buyOptionsWrapper}> Generate buy options </Button>
+                            <Button onClick={buyOptionsWrapper} isDisabled={buyOptionsParams.country === ''}> Generate buy options </Button>
                         </div>
                         
                         <div className="flex flex-col space-y-4 w-full">
@@ -211,10 +203,10 @@ export default function GenBuyQuote () {
                         </h2>
                     </div>
                     <div className="flex flex-col ml-10 gap-1 w-2/5">
-                        <h2> 1. <b>'Generate Buy Options'</b> in the section above to specify the country parameter. </h2>   
+                        <h2> 1. <b>&rsquo;Generate Buy Options&rsquo;</b> in the section above to specify the country parameter. </h2>   
                         <h2> 2. Select a <b>payment currency</b>, then select a <b>payment method</b> based on the available options. </h2>
                         <h2> 3. Select a <b>purchase currency</b>, then optionally select a <b>purchase network</b>. </h2>
-                        <h2> 4. Enter the <b>fiat payment amount</b> you wish to spend on this transaction. Then, click <b> 'Generate Buy Quote' </b>. </h2>
+                        <h2> 4. Enter the <b>fiat payment amount</b> you wish to spend on this transaction. Then, click <b> &lsquo;Generate Buy Quote&rsquo; </b>. </h2>
                         <h2> 5. The <b>quoteID</b> and Buy Quote request parameters will be passed into your one-time Coinbase Onramp URL in the section below.</h2>
                     </div>
                     <section className="flex flex-row gap-10 p-10">
@@ -232,6 +224,7 @@ export default function GenBuyQuote () {
                             />
 
                             <div className="flex flex-row justify-between gap-4">
+                            <Tooltip offset={-10} content="Select country first" isDisabled={buyQuoteParams.country !== ''} placement="bottom">
                                 <Select
                                     className="flex w-full"
                                     name="payment_currency"
@@ -240,51 +233,58 @@ export default function GenBuyQuote () {
                                     onChange={(value) => {onChangeBuyQuotesParams(value)}}
                                     isRequired
                                     items={buyOptionsResponse?.payment_currencies || []}
-                                    disabled={buyQuoteParams.country === ''}
+                                    isDisabled={buyQuoteParams.country === ''}
                                     >
                                     {(curr) => <SelectItem key={curr.id}>{curr.id}</SelectItem>}
                                 </Select>
+                            </Tooltip>
+                            <Tooltip offset={-10} content="Select payment currency first" isDisabled={buyQuoteParams.payment_currency !== ''} placement="bottom">
                                 <Select
                                     className="flex w-full"
                                     name="payment_method"
                                     label="Payment Method"
                                     placeholder="Select a payment method"
                                     isRequired
-                                    disabled={buyQuoteParams.payment_currency === ''}
+                                    isDisabled={buyQuoteParams.payment_currency === ''}
                                     onChange={(value) => {onChangeBuyQuotesParams(value);}}
                                     items={payment_methods_list}
                                 >
                                     {(method) => <SelectItem key={method.name}>{method.name}</SelectItem>}
                                 </Select>
-                                
+                            </Tooltip>
                             </div>
 
                             <div className="flex flex-row justify-between gap-4">
-                                <Select
-                                    className="flex w-full"
-                                    name="purchase_currency"
-                                    label="Purchase Currency"
-                                    placeholder="Select a purchase currency"
-                                    isRequired
-                                    disabled={buyQuoteParams.country === ''}
-                                    onChange={(value) => {onChangeBuyQuotesParams(value)}}
-                                    items={buyOptionsResponse?.purchase_currencies || []}
-                                    >
-                                    {(curr) => <SelectItem key={curr.symbol}>{curr.symbol}</SelectItem>}
-                                </Select>
-                                <Select
-                                    className="flex w-full"
-                                    name="purchase_network"
-                                    label="Purchase Network"
-                                    placeholder="Select purchase network (optional)"
-                                    onChange={(value) => {onChangeBuyQuotesParams(value)}}
-                                    items={purchase_networks_list}
-                                    disabled={buyQuoteParams.purchase_currency === ''}
-                                    >
-                                    {((network) => <SelectItem key={network.name}>{network.name}</SelectItem>)}
-                                </Select>
+                                <Tooltip offset={-10} content="Select country first" isDisabled={buyQuoteParams.country !== ''} placement="bottom">
+                                    <Select
+                                        className="flex w-full"
+                                        name="purchase_currency"
+                                        label="Purchase Currency"
+                                        placeholder="Select a purchase currency"
+                                        isRequired
+                                        isDisabled={buyQuoteParams.country === ''}
+                                        onChange={(value) => {onChangeBuyQuotesParams(value)}}
+                                        items={buyOptionsResponse?.purchase_currencies || []}
+                                        >
+                                        {(curr) => <SelectItem key={curr.symbol}>{curr.symbol}</SelectItem>}
+                                    </Select>
+                                </Tooltip>
+                                <Tooltip offset={-10} content="Select purchase currency first" isDisabled={buyQuoteParams.purchase_currency !== ''} placement="bottom">
+                                    <Select
+                                        className="flex w-full"
+                                        name="purchase_network"
+                                        label="Purchase Network"
+                                        placeholder="Select purchase network (optional)"
+                                        onChange={(value) => {onChangeBuyQuotesParams(value)}}
+                                        items={purchase_networks_list}
+                                        isDisabled={buyQuoteParams.purchase_currency === ''}
+                                        >
+                                        {((network) => <SelectItem key={network.name}>{network.name}</SelectItem>)}
+                                    </Select>
+                                </Tooltip>
                             </div>
 
+                            
                             <Input  
                                 className="flex"
                                 name="payment_amount"
@@ -295,10 +295,16 @@ export default function GenBuyQuote () {
                                     "Enter amount of currency to purchase"}
                                 onChange={(value) => {onChangeBuyQuotesParams(value)}}
                                 isRequired
+                                isDisabled={buyQuoteParams.payment_currency === '' || buyQuoteParams.payment_method === ''}
                             />
 
                             {/* Generate Buy Quote Button */}
-                            <Button onClick={buyQuoteWrapper} className="w-min" >
+                            <Button onClick={buyQuoteWrapper} className="w-min" isDisabled={
+                                buyQuoteParams.payment_currency === '' || 
+                                buyQuoteParams.payment_method === '' || 
+                                buyQuoteParams.purchase_currency === '' || 
+                                buyQuoteParams.payment_amount === ''
+                            } >
                                 Generate buy quote
                             </Button>
                         </div>
@@ -324,8 +330,9 @@ export default function GenBuyQuote () {
                         defaultNetwork: buyQuoteParams.payment_network,
                         fiatCurrency: buyQuoteParams.payment_currency,
                         presentFiatAmount: buyQuoteParams.payment_amount,
-                    }
-                }/>
+                    }}
+                    blockchains={purchase_networks_list.map((network: Item) => network.name)}
+                />
             </div>
         </div>
     )

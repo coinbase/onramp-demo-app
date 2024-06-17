@@ -43,17 +43,19 @@ export default async function handler(
     destination_wallets: [
       {
         address: reqBody.ethAddress,
-        blockchains: ["base", "ethereum"],
+        blockchains: reqBody.blockchains || ["base", "ethereum"],
       },
     ],
   };
+
+  console.log(jwt);
 
   fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { Authorization: "Bearer " + jwt },
   })
-    .then((response) => {console.log(response); return response.json()})
+    .then((response) => {return response.json()})
     .then((json) => {
       if(json.message) {
         console.error("Error:", json.message);
