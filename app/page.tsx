@@ -1,114 +1,54 @@
 "use client";
-import { Input } from "@nextui-org/input";
-import { Code } from "@nextui-org/code";
-import { Button } from "@nextui-org/button";
-import { Textarea } from "@nextui-org/input";
-import { Divider } from "@nextui-org/divider";
-import { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 
+import {Tabs, Tab, Card, Link} from "@nextui-org/react";
+import SecureTokenBox from "./components/SecureTokenBox";
+import BuyQuoteBox from "./components/BuyQuoteBox";
+
 export default function Home() {
-  const [secureToken, setSecureToken] = useState("");
-  const [ethAddress, setEthAddress] = useState("");
-
-  const generateSecureToken = useCallback(async () => {
-    console.log("generateSecureToken");
-    fetch("/api/secure-token", {
-      method: "POST",
-      body: JSON.stringify({ ethAddress }),
-    }) 
-      .then(async (response) => {
-        const json = await response.json();
-        if(response.ok) {
-          setSecureToken(json.token);
-        } else {
-          console.log("Error generating token: "+json.error);
-        }
-      });
-  }, [ethAddress]);
-
-  const linkReady = useMemo(() => secureToken.length > 0, [secureToken]);
-
-  const link = useMemo(() => {
-    if (!linkReady) return "Create a secure token to generate a URL";
-
-    return (
-      "https://pay.coinbase.com/buy/select-asset?sessionToken=" + secureToken
-    );
-  }, [linkReady, secureToken]);
-
-  const launch = useCallback(() => {
-    open(link, "_blank", "popup,width=540,height=700")
-  }, [link]);
-
   return (
-    <section className="flex flex-col items-center justify-center gap-4">
-      <Image
-        src="/cdp.svg"
-        alt="Next.js Logo"
-        width={180}
-        height={37}
-        priority
-        className="align-center"
-      />
-      <div className="inline-block max-w-lg text-center justify-center">
-        <h1 className="text-4xl">Coinbase Onramp demo app</h1>
-      </div>
-      <div className="inline-block max-w-lg text-left justify-center">
-        <p className="text-lg">Instructions:</p>
-        <p className="text-lg">
-          1. Go to the CDP portal and create a project.{" "}
-        </p>
-        <p className="text-lg">
-          2. Click on the Onramp tab and configure your integration.{" "}
-        </p>
-        <p className="text-lg">
-          3. Navigate to the API keys page and download a private key. Copy
-          the private key file to api_keys/cdp_api_key.json. 
-        </p>
-      </div>
+    <div className="space-y-10 size-full">
+      <Card className="flex flex-row justify-between p-5 w-full">
 
-      <div style={{ width: "600px" }} className="flex">
-        <Input
-          type="text"
-          label="ETH Address"
-          placeholder="Enter your address"
-          value={ethAddress}
-          onValueChange={(value) => {
-            setEthAddress(value);
-            setSecureToken("");
-          }}
-        />
-      </div>
+        <div className="flex flex-col space-y-5">
+          <div className="inline-block max-w-lg text-center">
+            <h1 className="text-4xl font-bold">Coinbase Onramp Demo App</h1>
+          </div>
+          <div className="inline-block max-w-lg text-left">
+            <p className="text-lg">Instructions:</p>
+            <p className="text-lg">
+              1. Go to <Link href="https://portal.cdp.coinbase.com/products/onramp" isExternal> Onramp </Link> in your Coinbase Developer Platform and configure your integration{" "}
+            </p>
+            <p className="text-lg">
+              2. Navigate to the <Link href="https://portal.cdp.coinbase.com/access/api" isExternal> API Keys </Link> tab and download a private key.{" "}
+            </p>
+            <p className="text-lg">
+              3.  Copy the private key file to api_keys/cdp_api_key.json inside your onramp-demo-app repo.
+            </p>
+          </div>
+        </div>
+        <div>
+          <Image
+            src="/cdp.svg"
+            alt="Next.js Logo"
+            width={200}
+            height={37}
+            priority
+            className="flex flex-col"
+          />
+          </div>
+      </Card>
 
-      <Button
-        onClick={generateSecureToken}
-        isDisabled={ethAddress.length === 0}
-      >
-        Generate secure token
-      </Button>
-
-      {secureToken.length > 0 && (
-        <>
-          <h4 className="text-medium">Onramp token:</h4>
-          <Code>{secureToken}</Code>
-        </>
-      )}
-
-      <Divider className="my-4" />
-
-      <Textarea
-        isReadOnly
-        label="Onramp URL"
-        variant="bordered"
-        labelPlacement="outside"
-        value={link}
-        className="max-w-xs"
-      />
-
-      <Button isDisabled={!linkReady} color="primary" onClick={launch}>
-        Launch CB Onramp
-      </Button>
-    </section>
+      <div className="flex w-full flex-col gap-5">
+      <Tabs aria-label="Options">
+        <Tab key="genToken" title="Generate Onramp URL">
+            <SecureTokenBox />
+        </Tab>
+        <Tab key="buyQuote" title="Generate Onramp Aggregator URL">
+          <BuyQuoteBox />
+        </Tab>
+      </Tabs>
+      </div>  
+    </div>
   );
 }
