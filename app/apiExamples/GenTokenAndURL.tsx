@@ -7,12 +7,19 @@ import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import {Card, Link, Select, SelectItem} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
 
+const blockchainOptions = [
+  {key: 'ethereum', label: 'ethereum'},
+  {key: 'polygon', label: 'polygon'},
+]
+
 export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
   const [secureToken, setSecureToken] = useState("");
   const [ethAddress, setEthAddress] = useState("");
 
-  const [blockchainOption, setBlockchainOption] = useState<string>('');
-  const blockchainOptions = useMemo(() => ["ethereum", "optimism", "polygon"], []);
+  const [blockchainOption, setBlockchainOption] = useState("ethereum");
+  const handleNetworkChange = (e) => {
+    setBlockchainOption(e.target.value);
+  }
 
   const generateSecureToken = useCallback(async () => {
     console.log("generateSecureToken");
@@ -86,19 +93,17 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText,
           isRequired
         />
 
-        {showBuyQuoteURLText &&
+        {!showBuyQuoteURLText &&
           <Select
             className="flex w-full"
             name="blockchain_option"
             label="Blockchain Network"
             placeholder="Select a network"
             isRequired
-            onChange = {(e) => {
-              setBlockchainOption(e.target.value);
-              console.log(e.target.value);
-            }}
+            defaultSelectedKeys={[blockchainOption]}
+            onChange={handleNetworkChange}
             >
-            {blockchainOptions.map((blockchain) => <SelectItem key={blockchain}> {blockchain} </SelectItem>)}
+            {blockchainOptions.map((blockchain) => <SelectItem key={blockchain.key}> {blockchain.label} </SelectItem>)}
           </Select>}
 
         <Button
