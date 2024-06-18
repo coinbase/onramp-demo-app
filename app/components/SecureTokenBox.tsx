@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import {Card, Link, Select, SelectItem} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
 import { generateSecureToken } from "../utils/queries";
+import {BLOCKCHAIN_LIST} from "../utils/blockchains";
 
 export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
   const [secureToken, setSecureToken] = useState("");
@@ -14,8 +15,11 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
 
   const [blockchainOption, setBlockchainOption] = useState("");
 
-  const secureTokenWrapper = useCallback(async () => {
+  const setBlockchain = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+    setBlockchainOption(event.target.value);
+  }, []);
 
+  const secureTokenWrapper = useCallback(async () => {
     const response = await generateSecureToken({ethAddress, blockchains: showBuyQuoteURLText ? blockchains : [blockchainOption.toLowerCase()]})
     console.log("generateSecureToken");
     try {
@@ -23,7 +27,7 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
     } catch (error) {
       alert(error);
       console.error(error);
-    }}, [ethAddress, blockchains, blockchainOption, showBuyQuoteURLText]);
+    }}, [ethAddress, showBuyQuoteURLText, blockchains, blockchainOption]);
 
 
   //   fetch("/api/secure-token", {
@@ -96,22 +100,23 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
         />
 
         {!showBuyQuoteURLText &&
-          <Input
+          <Select
             className="flex w-full"
-            type="text"
+            name="blockchain-option"
             label="Blockchain Network"
-            placeholder="Enter your network"
+            placeholder="Select a network"
             value={blockchainOption}
-            onValueChange={(value) => {
-              setBlockchainOption(value);
-            }}
+            onChange={setBlockchain}
+            items={BLOCKCHAIN_LIST}
             isRequired
-          />}
+          >
+            {(curr) => <SelectItem key={curr.id}>{curr.name}</SelectItem>}
+            </Select>}
 
         <Button
           onClick={secureTokenWrapper}
           isDisabled={
-            (showBuyQuoteURLText && (ethAddress.length === 0 || !blockchains)) ||
+            (showBuyQuoteURLText && ethAddress.length === 0) ||
             (!showBuyQuoteURLText && (ethAddress.length === 0 || !blockchainOption))
           }
         >

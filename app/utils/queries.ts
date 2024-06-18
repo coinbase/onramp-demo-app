@@ -11,6 +11,7 @@ export async function generateSecureToken(
       body: JSON.stringify({ ethAddress, blockchains: blockchains}),
     });
     if (!response.ok) {
+      console.log(await response.text());
         throw new Error('Failed to fetch secure token: ensure valid inputs, crypto wallet matches network, and secure connection');
     }
     const json = await response.json();
