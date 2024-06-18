@@ -1,19 +1,15 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import GenTokenAndURL from "./GenTokenAndURL";
 import { Divider } from "@nextui-org/divider";
-import { Accordion, AccordionItem, Card, Link, Tooltip } from "@nextui-org/react";
+import { Card, Link, Tooltip } from "@nextui-org/react";
 import {Select, SelectItem} from "@nextui-org/select";
-import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse } from "../utils/types";
+import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse, } from "../utils/types";
 import { generateBuyOptions, generateBuyQuote } from "../utils/queries";
 import ReactJson from "react-json-view";
 import { BuyConfigBox } from "./BuyConfigBox";
 import { scrollToHeader } from "../utils/helpers";
-
-type Item = {
-    name: string;
-}
 
 export default function GenBuyQuote () {
     
@@ -331,7 +327,7 @@ export default function GenBuyQuote () {
                         fiatCurrency: buyQuoteParams.payment_currency,
                         presentFiatAmount: buyQuoteParams.payment_amount,
                     }}
-                    blockchains={purchase_networks_list.map((network: Item) => network.name)}
+                    blockchains={purchase_networks_list.map((network) => network.name)}
                 />
             </div>
         </div>

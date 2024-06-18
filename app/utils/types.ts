@@ -1,4 +1,3 @@
-
 export type AggregatorInputParams = {
     quoteID: string,
     defaultAsset: string,

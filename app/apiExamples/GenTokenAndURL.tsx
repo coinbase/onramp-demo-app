@@ -2,21 +2,23 @@ import { Input } from "@nextui-org/input";
 import { Code } from "@nextui-org/code";
 import { Button } from "@nextui-org/button";
 import { Textarea } from "@nextui-org/input";
-import { Divider } from "@nextui-org/divider";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, ChangeEvent } from "react";
 
-import {Card, Link} from "@nextui-org/react";
+import {Card, Link, Select, SelectItem} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
 
 export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
   const [secureToken, setSecureToken] = useState("");
   const [ethAddress, setEthAddress] = useState("");
 
+  const [blockchainOption, setBlockchainOption] = useState<string>('');
+  const blockchainOptions = useMemo(() => ["ethereum", "optimism", "polygon"], []);
+
   const generateSecureToken = useCallback(async () => {
     console.log("generateSecureToken");
     fetch("/api/secure-token", {
       method: "POST",
-      body: JSON.stringify({ ethAddress, blockchains}),
+      body: JSON.stringify({ ethAddress, blockchains: blockchains || [blockchainOption]}),
     }) 
       .then(async (response) => {
         const json = await response.json();
@@ -83,9 +85,26 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText,
           }}
           isRequired
         />
+
+        {showBuyQuoteURLText &&
+          <Select
+            className="flex w-full"
+            name="blockchain_option"
+            label="Blockchain Network"
+            placeholder="Select a network"
+            isRequired
+            onChange = {(e) => {
+              setBlockchainOption(e.target.value);
+              console.log(e.target.value);
+            }}
+            >
+            {blockchainOptions.map((blockchain) => <SelectItem key={blockchain}> {blockchain} </SelectItem>)}
+          </Select>}
+
         <Button
           onClick={generateSecureToken}
-          isDisabled={ethAddress.length === 0}
+          isDisabled={(ethAddress.length === 0 && !blockchainOption && !blockchains)
+          }
         >
           Generate secure token
         </Button>
