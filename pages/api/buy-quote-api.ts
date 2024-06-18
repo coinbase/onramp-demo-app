@@ -47,7 +47,6 @@ export default async function handler(
     signOptions,
   );
 
-  console.log(req.body)
   const reqBody = JSON.parse(req.body);
   const body: BuyQuoteRequest = {
     purchase_currency: reqBody.purchase_currency,
@@ -58,13 +57,12 @@ export default async function handler(
     payment_network: reqBody.payment_network,
   }
 
-  console.log(body);
   fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { Authorization: "Bearer " + jwt },
   })
-    .then((response) => {console.log(response); return response.json()})
+    .then((response) => {return response.json()})
     .then((json) => {
       if(json.message) {
         console.error("Error:", json.message);

@@ -45,14 +45,12 @@ export default async function handler(
     key_secret,
     signOptions,
   );
-  
-  console.log(jwt);
 
   fetch(url, {
     method: request_method,
     headers: { Authorization: "Bearer " + jwt },
   })
-    .then((response) => {console.log(response); return response.json()})
+    .then((response) => {return response.json()})
     .then((json) => {
       if(json.message) {
         console.error("Error:", json.message);

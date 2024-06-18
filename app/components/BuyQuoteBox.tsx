@@ -11,7 +11,7 @@ import { BuyConfigBox } from "./BuyConfigBox";
 import { scrollToHeader } from "../utils/helpers";
 import SecureTokenBox from "./SecureTokenBox";
 
-export default function GenBuyQuote () {
+export default function BuyQuoteBox() {
     
     // Buy Options API Request Parameters & wrapper function to change parameter state
     const [buyOptionsParams, setBuyOptionsParams] = useState<BuyOptionsRequest>({

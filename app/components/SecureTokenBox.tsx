@@ -16,7 +16,7 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
 
   const secureTokenWrapper = useCallback(async () => {
 
-    const response = await generateSecureToken({ethAddress, blockchains: showBuyQuoteURLText ? blockchains : [blockchainOption]})
+    const response = await generateSecureToken({ethAddress, blockchains: showBuyQuoteURLText ? blockchains : [blockchainOption.toLowerCase()]})
     console.log("generateSecureToken");
     try {
       if (response) {setSecureToken(response);} else {setSecureToken('')}

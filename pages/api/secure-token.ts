@@ -48,8 +48,6 @@ export default async function handler(
     ],
   };
 
-  console.log(jwt);
-
   fetch(url, {
     method: "POST",
     body: JSON.stringify(body),

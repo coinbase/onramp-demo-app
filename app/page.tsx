@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 
-import {Tabs, Tab, Card, CardBody, Link} from "@nextui-org/react";
-import GenBuyQuote from "./apiExamples/GenBuyQuote";
-import SecureTokenBox from "./apiExamples/SecureTokenBox";
+import {Tabs, Tab, Card, Link} from "@nextui-org/react";
+import SecureTokenBox from "./components/SecureTokenBox";
+import BuyQuoteBox from "./components/BuyQuoteBox";
 
 export default function Home() {
   return (
@@ -45,7 +45,7 @@ export default function Home() {
             <SecureTokenBox />
         </Tab>
         <Tab key="buyQuote" title="Generate Onramp Aggregator URL">
-          <GenBuyQuote />
+          <BuyQuoteBox />
         </Tab>
       </Tabs>
       </div>  
