@@ -1,32 +1,49 @@
-import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse } from "./types";
+import { AggregatorInputParams, BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse } from "./types";
 
 
+export async function generateSecureToken(
+  { ethAddress, blockchains }: { ethAddress: string, aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}): 
+    Promise<string> {
+  try {
+    console.log("generateSecureToken");
+    const response = await fetch("/api/secure-token", {
+      method: "POST",
+      body: JSON.stringify({ ethAddress, blockchains: blockchains}),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch secure token');
+    }
+    const json = await response.json();
+    return json.token;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export async function generateBuyConfig () {
     try {
+        console.log("generateBuyConfig");
         const response = await fetch("/api/buy-config-api", {
             method: "GET",
         });
         if (!response.ok) {
-            alert('Error fetching buy config');
-            throw new Error('Failed to fetch');
+            throw new Error('Failed to fetch buy config');
         }
         const json = await response.json();
         return json;
     } catch (error) {
-        alert('Error fetching buy config:' + `${error}`);
         throw error;
     }
 };
 
 export async function generateBuyOptions({country, subdivision}: BuyOptionsRequest) {
     try {
+      console.log("generateBuyOptions");
       const response = await fetch("/api/buy-options-api", {
         method: "POST",
         body: JSON.stringify({ country, subdivision}),
       });
       if (!response.ok) {
-        alert("Failed to fetch buy options");
         throw new Error('Failed to fetch buy options');
       }
       const json: BuyOptionsResponse = await response.json();
@@ -36,7 +53,6 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
   
       return { json, payment_currencies, purchase_currencies };
     } catch (error) {
-      alert('Error fetching buy options:' + `${error}`);
       throw error;
     }
   };
@@ -56,7 +72,6 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
       const json: BuyQuoteResponse = await response.json();
       return json; // Return the JSON data
     } catch (error) {
-      console.error('Error generating buy quote:', error);
       throw error; // Re-throw the error to be handled by the caller
     }
   }

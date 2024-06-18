@@ -1,15 +1,15 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
-import GenTokenAndURL from "./GenTokenAndURL";
 import { Divider } from "@nextui-org/divider";
 import { Card, Link, Tooltip } from "@nextui-org/react";
 import {Select, SelectItem} from "@nextui-org/select";
-import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse, } from "../utils/types";
+import { BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse} from "../utils/types";
 import { generateBuyOptions, generateBuyQuote } from "../utils/queries";
 import ReactJson from "react-json-view";
 import { BuyConfigBox } from "./BuyConfigBox";
 import { scrollToHeader } from "../utils/helpers";
+import SecureTokenBox from "./SecureTokenBox";
 
 export default function GenBuyQuote () {
     
@@ -36,7 +36,7 @@ export default function GenBuyQuote () {
             payment_method: '',
             country: '',
             payment_amount: '',
-            payment_network: '',
+            purchase_network: '',
         }
 
     // Buy Quote Request Parameters & wrapper function to change parameter state
@@ -78,7 +78,7 @@ export default function GenBuyQuote () {
 
             prevCountrySubdiv.current = buyOptionsParams.country + buyOptionsParams.subdivision; // store current query params for future caching
         } catch (error) {
-            console.error(error);
+            alert(error);
         }
     }, [buyOptionsParams]);
 
@@ -87,7 +87,8 @@ export default function GenBuyQuote () {
             alert("Please fill out all required fields");
             return;
         }
-        if (buyQuoteParams.payment_amount < payment_amount_limits.min || buyQuoteParams.payment_amount > payment_amount_limits.max) {
+        if (parseInt(buyQuoteParams.payment_amount) < parseInt(payment_amount_limits.min) || 
+            parseInt(buyQuoteParams.payment_amount) > parseInt(payment_amount_limits.max)) {
             alert(`Payment amount for currency '${buyQuoteParams.payment_currency} - ${buyQuoteParams.payment_method}' must be between ${payment_amount_limits.min} and ${payment_amount_limits.max}`);
             return;
         }
@@ -96,7 +97,7 @@ export default function GenBuyQuote () {
         try {
             setBuyQuoteResponse(response);
         } catch (error) {
-            console.error(error);
+            alert(error);
         }
     }, [buyQuoteParams]);
 
@@ -138,7 +139,7 @@ export default function GenBuyQuote () {
                     <div className="flex flex-col p-10 pb-5 gap-1">
                         <h1 
                             onClick={() => scrollToHeader("buyOptionsHeader")} 
-                            className="font-bold underline"> 
+                            className="font-bold"> 
                             Generate Buy Options: 
                         </h1>
                         <h2> The <Link href="https://docs.cdp.coinbase.com/onramp/docs/api-configurations/" isExternal> Buy Options API </Link> returns the supported fiat currencies and available crypto assets that can be passed into the Buy Quote API. </h2>
@@ -191,7 +192,7 @@ export default function GenBuyQuote () {
                 <Card id="buyQuoteHeader">
                     {/* Buy Quote Header */}
                     <div className="flex flex-col p-10 pb-5 gap-1">
-                        <h1 onClick={() => scrollToHeader("buyQuoteHeader")} className="font-bold underline"> Generate Buy Quote: </h1>
+                        <h1 onClick={() => scrollToHeader("buyQuoteHeader")} className="font-bold"> Generate Buy Quote: </h1>
                         <h2> 
                             The <Link href="https://docs.cdp.coinbase.com/onramp/docs/api-generating-quotes/" isExternal> Buy Quote API </Link> provides clients with a quote based on the asset the user would like to purchase, 
                             the network they plan to purchase it on, the dollar amount of the payment, the payment currency, 
@@ -318,12 +319,12 @@ export default function GenBuyQuote () {
                 <Divider className="my-10" />
             
                 {/* Generate Secure Onramp Token + URL Card Box */}
-                <GenTokenAndURL showBuyQuoteURLText aggregatorInputs={
+                <SecureTokenBox showBuyQuoteURLText aggregatorInputs={
                     {
                         quoteID: buyQuoteResponse?.quote_id || '',
                         defaultAsset: buyQuoteParams.purchase_currency,
                         defaultPaymentMethod: buyQuoteParams.payment_method,
-                        defaultNetwork: buyQuoteParams.payment_network,
+                        defaultNetwork: buyQuoteParams.purchase_network,
                         fiatCurrency: buyQuoteParams.payment_currency,
                         presentFiatAmount: buyQuoteParams.payment_amount,
                     }}

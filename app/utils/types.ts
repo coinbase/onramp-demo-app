@@ -57,7 +57,7 @@ export type BuyQuoteRequest = {
     payment_currency: string,
     payment_method: string,
     country: string,
-    payment_network?: string,
+    purchase_network?: string,
 }
 
 export type BuyQuoteResponse = {

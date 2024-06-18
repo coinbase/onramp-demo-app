@@ -6,37 +6,40 @@ import { useState, useCallback, useMemo, ChangeEvent } from "react";
 
 import {Card, Link, Select, SelectItem} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
+import { generateSecureToken } from "../utils/queries";
 
-const blockchainOptions = [
-  {key: 'ethereum', label: 'ethereum'},
-  {key: 'polygon', label: 'polygon'},
-]
-
-export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
+export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
   const [secureToken, setSecureToken] = useState("");
   const [ethAddress, setEthAddress] = useState("");
 
-  const [blockchainOption, setBlockchainOption] = useState("ethereum");
-  const handleNetworkChange = (e) => {
-    setBlockchainOption(e.target.value);
-  }
+  const [blockchainOption, setBlockchainOption] = useState("");
 
-  const generateSecureToken = useCallback(async () => {
+  const secureTokenWrapper = useCallback(async () => {
+
+    const response = await generateSecureToken({ethAddress, blockchains: showBuyQuoteURLText ? blockchains : [blockchainOption]})
     console.log("generateSecureToken");
-    fetch("/api/secure-token", {
-      method: "POST",
-      body: JSON.stringify({ ethAddress, blockchains: blockchains || [blockchainOption]}),
-    }) 
-      .then(async (response) => {
-        const json = await response.json();
-        if(response.ok) {
-          setSecureToken(json.token);
-        } else {
-          alert("Error generating token: "+json.error);
-          console.log("Error generating token: "+json.error);
-        }
-      });
-  }, [ethAddress, blockchains]);
+    try {
+      if (response) {setSecureToken(response);} else {setSecureToken('')}
+    } catch (error) {
+      alert(error);
+      console.error(error);
+    }}, [ethAddress, blockchains, blockchainOption, showBuyQuoteURLText]);
+
+
+  //   fetch("/api/secure-token", {
+  //     method: "POST",
+  //     body: JSON.stringify({ ethAddress, blockchains: blockchains || [blockchainOption]}),
+  //   }) 
+  //     .then(async (response) => {
+  //       const json = await response.json();
+  //       if(response.ok) {
+  //         setSecureToken(json.token);
+  //       } else {
+  //         alert("Error generating token: "+json.error);
+  //         console.log("Error generating token: "+json.error);
+  //       }
+  //     });
+  // }, [ethAddress, blockchains]);
 
   const linkReady = useMemo(() => secureToken.length > 0, [secureToken]);
 
@@ -67,7 +70,6 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText,
       <h2> 2. Enter a <b>destination wallet address</b> and then click <b>&lsquo;Generate secure token&rsquo;</b>. </h2>
       <h2> 3. Click <b> Launch Onramp </b> to see the one-click buy experience for your users. </h2>
     </div>
-      
   )
 
   return ( 
@@ -94,21 +96,23 @@ export default function GenTokenAndURL ({ aggregatorInputs, showBuyQuoteURLText,
         />
 
         {!showBuyQuoteURLText &&
-          <Select
+          <Input
             className="flex w-full"
-            name="blockchain_option"
+            type="text"
             label="Blockchain Network"
-            placeholder="Select a network"
+            placeholder="Enter your network"
+            value={blockchainOption}
+            onValueChange={(value) => {
+              setBlockchainOption(value);
+            }}
             isRequired
-            defaultSelectedKeys={[blockchainOption]}
-            onChange={handleNetworkChange}
-            >
-            {blockchainOptions.map((blockchain) => <SelectItem key={blockchain.key}> {blockchain.label} </SelectItem>)}
-          </Select>}
+          />}
 
         <Button
-          onClick={generateSecureToken}
-          isDisabled={(ethAddress.length === 0 && !blockchainOption && !blockchains)
+          onClick={secureTokenWrapper}
+          isDisabled={
+            (showBuyQuoteURLText && (ethAddress.length === 0 || !blockchains)) ||
+            (!showBuyQuoteURLText && (ethAddress.length === 0 || !blockchainOption))
           }
         >
           Generate secure token

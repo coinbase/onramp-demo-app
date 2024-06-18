@@ -2,8 +2,8 @@
 import Image from "next/image";
 
 import {Tabs, Tab, Card, CardBody, Link} from "@nextui-org/react";
-import GenTokenAndURL from "./apiExamples/GenTokenAndURL";
 import GenBuyQuote from "./apiExamples/GenBuyQuote";
+import SecureTokenBox from "./apiExamples/SecureTokenBox";
 
 export default function Home() {
   return (
@@ -42,7 +42,7 @@ export default function Home() {
       <div className="flex w-full flex-col gap-5">
       <Tabs aria-label="Options">
         <Tab key="genToken" title="Generate Onramp URL">
-            <GenTokenAndURL />
+            <SecureTokenBox />
         </Tab>
         <Tab key="buyQuote" title="Generate Onramp Aggregator URL">
           <GenBuyQuote />
