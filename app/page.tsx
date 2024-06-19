@@ -27,7 +27,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <div>
+        <div> 
           <Image
             src="/cdp.svg"
             alt="Next.js Logo"

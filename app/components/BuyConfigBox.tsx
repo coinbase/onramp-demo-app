@@ -9,11 +9,16 @@ export function BuyConfigBox() {
     // json response containing BuyConfig and BuyOptions
     const [buyConfig, setBuyConfig] = useState();
 
+    const [configLoading, setConfigLoading] = useState(false);
+
     const buyConfigurationWrapper = async () => {
+        setConfigLoading(true);
         const response = await generateBuyConfig();
         try {
+            setConfigLoading(false);
             setBuyConfig(response);
         } catch (error) {
+            setConfigLoading(false);
             alert(error);
         }
     }
@@ -25,7 +30,7 @@ export function BuyConfigBox() {
         <div className="flex flex-row w-full justify-center gap-10 mt-5">
             <Button className="w-full" onClick={buyConfigurationWrapper}> Generate Buy Config </Button>
             <Card className="w-full p-5">
-                {buyConfig && <ReactJson collapsed={true} src={buyConfig} />} 
+                {configLoading ? 'loading...' : (buyConfig && <ReactJson collapsed={true} src={buyConfig} />)} 
             </Card>
         </div>
         </Card>

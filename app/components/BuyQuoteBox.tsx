@@ -53,12 +53,10 @@ export default function BuyQuoteBox() {
     // Buy Quote Response
     const [buyQuoteResponse, setBuyQuoteResponse] = useState<BuyQuoteResponse>();
 
-
     /* Wrapper around buy options API call under api/buy-options-api
         - Calls and awaits the API with the current buyOptionsParams state
         - Sets the buyOptionsResponse state to API response, reset buyQuoteParams, payment/purchase currencies
     */
-
     const buyOptionsWrapper = useCallback(async () => {
         if (!buyOptionsParams.country) {
             alert("Please fill out all required fields");
@@ -67,7 +65,6 @@ export default function BuyQuoteBox() {
         if (buyOptionsParams.country + buyOptionsParams.subdivision === prevCountrySubdiv.current) { // prevent re-fetching same data
             return;
         }
-
         const response = await generateBuyOptions(buyOptionsParams);
         try {
             setBuyOptionsResponse(response?.json);
@@ -82,6 +79,11 @@ export default function BuyQuoteBox() {
         }
     }, [buyOptionsParams]);
 
+
+    /* Wrapper around buy quote API call under api/buy-quote-api
+        - Calls and awaits the API with the current buyQuoteParams state
+        - Sets the buyQuoteResponse state to API response
+    */
     const buyQuoteWrapper = useCallback(async () => {
         if (!buyQuoteParams.purchase_currency || !buyQuoteParams.payment_currency || !buyQuoteParams.payment_method || !buyQuoteParams.payment_amount || !buyQuoteParams.country) {
             alert("Please fill out all required fields");
@@ -92,7 +94,6 @@ export default function BuyQuoteBox() {
             alert(`Payment amount for currency '${buyQuoteParams.payment_currency} - ${buyQuoteParams.payment_method}' must be between ${payment_amount_limits.min} and ${payment_amount_limits.max}`);
             return;
         }
-
         const response = await generateBuyQuote(buyQuoteParams);
         try {
             setBuyQuoteResponse(response);
@@ -178,7 +179,7 @@ export default function BuyQuoteBox() {
                         <div className="flex flex-col space-y-4 w-full">
                             <h2 className="font-bold underline"> Buy Options Response </h2>
                             <Card className="flex-auto justify-top size-full p-5" title="Buy Option Response">
-                                {buyOptionsResponse && <ReactJson collapsed={true} src={buyOptionsResponse} />} 
+                                {buyOptionsResponse && <ReactJson collapsed={true} src={buyOptionsResponse}/>} 
                             </Card>
                         </div>
                     </section>

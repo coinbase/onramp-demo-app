@@ -11,7 +11,8 @@ export async function generateSecureToken(
       body: JSON.stringify({ ethAddress, blockchains: blockchains}),
     });
     if (!response.ok) {
-        throw new Error('Failed to fetch secure token: ensure valid inputs, crypto wallet matches network, and secure connection');
+      console.log(await response.text());
+      throw new Error('Failed to fetch secure token: ensure valid inputs, crypto wallet matches network, and secure connection');
     }
     const json = await response.json();
     return json.token;
@@ -27,7 +28,8 @@ export async function generateBuyConfig () {
             method: "GET",
         });
         if (!response.ok) {
-            throw new Error('Failed to fetch buy config');
+          console.log(await response.text());
+          throw new Error('Failed to fetch buy config');
         }
         const json = await response.json();
         return json;
@@ -44,6 +46,7 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
         body: JSON.stringify({ country, subdivision}),
       });
       if (!response.ok) {
+        console.log(await response.text());
         throw new Error('Failed to fetch buy options');
       }
       const json: BuyOptionsResponse = await response.json();
@@ -66,11 +69,12 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
       });
   
       if (!response.ok) {
+        console.log(await response.text());
         throw new Error('Failed to fetch buy quote'); // Throw an error if response is not ok
       }
-  
       const json: BuyQuoteResponse = await response.json();
       return json; // Return the JSON data
+
     } catch (error) {
       throw error; // Re-throw the error to be handled by the caller
     }

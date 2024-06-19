@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import {Card, Link, Select, SelectItem} from "@nextui-org/react";
 import { AggregatorInputParams} from "../utils/types";
 import { generateSecureToken } from "../utils/queries";
+import { BLOCKCHAIN_LIST } from "../utils/blockchains";
 
 export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, blockchains }: { aggregatorInputs?: AggregatorInputParams, showBuyQuoteURLText?: boolean, blockchains?: string[]}) {
   const [secureToken, setSecureToken] = useState("");
@@ -14,32 +15,20 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
 
   const [blockchainOption, setBlockchainOption] = useState("");
 
-  const secureTokenWrapper = useCallback(async () => {
+  const setBlockchain = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+    setBlockchainOption(event.target.value);
+  }, []);
 
+  const secureTokenWrapper = useCallback(async () => {
     const response = await generateSecureToken({ethAddress, blockchains: showBuyQuoteURLText ? blockchains : [blockchainOption.toLowerCase()]})
     console.log("generateSecureToken");
     try {
       if (response) {setSecureToken(response);} else {setSecureToken('')}
     } catch (error) {
+      console.log(error)
       alert(error);
       console.error(error);
-    }}, [ethAddress, blockchains, blockchainOption, showBuyQuoteURLText]);
-
-
-  //   fetch("/api/secure-token", {
-  //     method: "POST",
-  //     body: JSON.stringify({ ethAddress, blockchains: blockchains || [blockchainOption]}),
-  //   }) 
-  //     .then(async (response) => {
-  //       const json = await response.json();
-  //       if(response.ok) {
-  //         setSecureToken(json.token);
-  //       } else {
-  //         alert("Error generating token: "+json.error);
-  //         console.log("Error generating token: "+json.error);
-  //       }
-  //     });
-  // }, [ethAddress, blockchains]);
+    }}, [ethAddress,  showBuyQuoteURLText, blockchains, blockchainOption]);
 
   const linkReady = useMemo(() => secureToken.length > 0, [secureToken]);
 
@@ -96,22 +85,22 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
         />
 
         {!showBuyQuoteURLText &&
-          <Input
+          <Select
             className="flex w-full"
-            type="text"
+            name="blockchain-option"
             label="Blockchain Network"
-            placeholder="Enter your network"
-            value={blockchainOption}
-            onValueChange={(value) => {
-              setBlockchainOption(value);
-            }}
+            placeholder="Select a network"
+            onChange={setBlockchain}
+            items={BLOCKCHAIN_LIST}
             isRequired
-          />}
+          >
+          {(curr) => <SelectItem key={curr.id}>{curr.name}</SelectItem>}
+          </Select> }
 
         <Button
           onClick={secureTokenWrapper}
           isDisabled={
-            (showBuyQuoteURLText && (ethAddress.length === 0 || !blockchains)) ||
+            (showBuyQuoteURLText && ethAddress.length === 0) ||
             (!showBuyQuoteURLText && (ethAddress.length === 0 || !blockchainOption))
           }
         >
