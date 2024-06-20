@@ -65,6 +65,7 @@ export default function BuyQuoteBox() {
         if (buyOptionsParams.country + buyOptionsParams.subdivision === prevCountrySubdiv.current) { // prevent re-fetching same data
             return;
         }
+        setBuyOptionsResponse(undefined);
         const response = await generateBuyOptions(buyOptionsParams);
         try {
             setBuyOptionsResponse(response?.json);
@@ -94,6 +95,7 @@ export default function BuyQuoteBox() {
             alert(`Payment amount for currency '${buyQuoteParams.payment_currency} - ${buyQuoteParams.payment_method}' must be between ${payment_amount_limits.min} and ${payment_amount_limits.max}`);
             return;
         }
+        setBuyQuoteResponse(undefined);
         const response = await generateBuyQuote(buyQuoteParams);
         try {
             setBuyQuoteResponse(response);

@@ -15,7 +15,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold">Coinbase Onramp Demo App</h1>
           </div>
           <div className="inline-block max-w-lg text-left">
-            <p className="text-lg">Instructions:</p>
+            <p className="text-lg font-bold">Instructions:</p>
             <p className="text-lg">
               1. Go to <Link href="https://portal.cdp.coinbase.com/products/onramp" isExternal> Onramp </Link> in your Coinbase Developer Platform and configure your integration{" "}
             </p>

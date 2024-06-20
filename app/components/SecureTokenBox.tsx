@@ -50,13 +50,13 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
   }, [link]);
 
   const helperText = showBuyQuoteURLText ?
-  <h2> The generated link initializes the Coinbase Onramp URL with the appropriate parameters to execute that buy in just one click for the user. </h2>:
-  <h2>Generate a secure one time URL to launch an Onramp session.</h2>
+  <h2> The generated link initializes the Coinbase Onramp URL with the appropriate parameters to execute that buy in just one click for the user. </h2> :
+  <h2>Generate a secure one time URL to launch an Onramp session. Provide a <b>destination wallet address</b> and a supporting <b>blockhain network</b>.</h2>
 
   const buyQuoteURLDirections = (
     <div className="flex flex-col ml-10 gap-1 w-2/5">
       <h2 > 1. Generate a Buy Quote in the section above to get the input parameters to create a secure Onramp URL. </h2>
-      <h2> 2. Enter a <b>destination wallet address</b> and then click <b>&lsquo;Generate secure token&rsquo;</b>. </h2>
+      <h2> 2. Enter a <b>destination wallet address</b> and a supporting <b>blockchain network</b> then click <b>&lsquo;Generate secure token&rsquo;</b>. </h2>
       <h2> 3. Click <b> Launch Onramp </b> to see the one-click buy experience for your users. </h2>
     </div>
   )
