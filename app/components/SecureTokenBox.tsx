@@ -67,68 +67,74 @@ export default function SecureTokenBox({ aggregatorInputs, showBuyQuoteURLText, 
         <h1 className="font-bold underline"> <Link color="foreground" href="https://docs.cdp.coinbase.com/onramp/docs/api-initializing/" isExternal> Generate Secure Onramp Token & URL: </Link> </h1>
         {helperText}
       </div>
+      
+
+    
+    {!showBuyQuoteURLText || showBuyQuoteURLText && aggregatorInputs?.quoteID ? 
+    <div>
       {showBuyQuoteURLText && buyQuoteURLDirections}
-
-    <section className="flex flex-row justify-between gap-10 p-10 pt-5">
-      <div className="flex flex-col space-y-5 w-full">
-        <Input
-          className="flex w-full"
-          type="text"
-          label="Destination Wallet Address"
-          placeholder="Enter your address"
-          value={ethAddress}
-          onValueChange={(value) => {
-            setEthAddress(value);
-            setSecureToken("");
-          }}
-          isRequired
-        />
-
-        {!showBuyQuoteURLText &&
-          <Select
+      <section className="flex flex-row justify-between gap-10 p-10 pt-5">
+        
+        <div className="flex flex-col space-y-5 w-full">
+          <Input
             className="flex w-full"
-            name="blockchain-option"
-            label="Blockchain Network"
-            placeholder="Select a network"
-            onChange={setBlockchain}
-            items={BLOCKCHAIN_LIST}
+            type="text"
+            label="Destination Wallet Address"
+            placeholder="Enter your address"
+            value={ethAddress}
+            onValueChange={(value) => {
+              setEthAddress(value);
+              setSecureToken("");
+            }}
             isRequired
+          />
+
+          {!showBuyQuoteURLText &&
+            <Select
+              className="flex w-full"
+              name="blockchain-option"
+              label="Blockchain Network"
+              placeholder="Select a network"
+              onChange={setBlockchain}
+              items={BLOCKCHAIN_LIST}
+              isRequired
+            >
+            {(curr) => <SelectItem key={curr.id}>{curr.name}</SelectItem>}
+            </Select> }
+
+          <Button
+            onClick={secureTokenWrapper}
+            isDisabled={
+              (showBuyQuoteURLText && ethAddress.length === 0) ||
+              (!showBuyQuoteURLText && (ethAddress.length === 0 || !blockchainOption))
+            }
           >
-          {(curr) => <SelectItem key={curr.id}>{curr.name}</SelectItem>}
-          </Select> }
+            Generate secure token
+          </Button>
 
-        <Button
-          onClick={secureTokenWrapper}
-          isDisabled={
-            (showBuyQuoteURLText && ethAddress.length === 0) ||
-            (!showBuyQuoteURLText && (ethAddress.length === 0 || !blockchainOption))
-          }
-        >
-          Generate secure token
-        </Button>
-
-        {secureToken.length > 0 && (
-          <>
-            <h4 className="text-medium">Onramp token:</h4>
-            <Code>{secureToken}</Code>
-          </>
-        )}
-      </div>
+          {secureToken.length > 0 && (
+            <>
+              <h4 className="text-medium">Onramp token:</h4>
+              <Code>{secureToken}</Code>
+            </>
+          )}
+        </div>
 
 
-      <div className="flex flex-col space-y-5 w-full">
-        <Textarea
-          className="flex-auto"
-          isReadOnly
-          label="Onramp URL"
-          variant="bordered"
-          value={link}
-        />
-        <Button isDisabled={!linkReady} color="primary" onClick={launch}>
-          Launch Onramp
-        </Button>
-      </div>
+        <div className="flex flex-col space-y-5 w-full">
+          <Textarea
+            className="flex-auto"
+            isReadOnly
+            label="Onramp URL"
+            variant="bordered"
+            value={link}
+          />
+          <Button isDisabled={!linkReady} color="primary" onClick={launch}>
+            Launch Onramp
+          </Button>
+        </div>
 
-    </section>
+      </section> 
+    </div> : undefined}
     </Card>
 )}

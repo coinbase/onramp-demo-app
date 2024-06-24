@@ -45,15 +45,15 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
         method: "POST",
         body: JSON.stringify({ country, subdivision}),
       });
+      
       if (!response.ok) {
         console.log(await response.text());
         throw new Error('Failed to fetch buy options');
       }
+
       const json: BuyOptionsResponse = await response.json();
-  
       const payment_currencies = json.payment_currencies.map((currency) => ({ name: currency.id }));
       const purchase_currencies = json.purchase_currencies.map((currency) => ({ name: currency.symbol }));
-  
       return { json, payment_currencies, purchase_currencies };
     } catch (error) {
       throw error;
@@ -72,9 +72,9 @@ export async function generateBuyOptions({country, subdivision}: BuyOptionsReque
         console.log(await response.text());
         throw new Error('Failed to fetch buy quote'); // Throw an error if response is not ok
       }
+
       const json: BuyQuoteResponse = await response.json();
       return json; // Return the JSON data
-
     } catch (error) {
       throw error; // Re-throw the error to be handled by the caller
     }

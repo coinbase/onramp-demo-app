@@ -8,6 +8,15 @@ export type AggregatorInputParams = {
     presentFiatAmount: string,
 }
 
+export type BuyConfigResponse = {
+    "countries": {
+        "id": string,
+        "subdivisions": string[],
+        "payment_methods": string[],
+        "disable_3ds_cards": boolean
+    }[],
+}
+
 export type BuyOptionsRequest = {
     country: string,
     subdivision?: string,

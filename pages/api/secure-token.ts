@@ -27,7 +27,7 @@ export default async function handler(
     algorithm: "ES256",
     header: {
       kid: key_name,
-      nonce: crypto.randomBytes(16).toString("hex"),
+      nonce: crypto.randomBytes(16).toString("hex"), // non-standard, coinbase-specific header that is necessary
     },
   }
 
