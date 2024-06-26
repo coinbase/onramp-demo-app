@@ -23,14 +23,9 @@ import { BuyConfigBox } from "./BuyConfigBox";
 import SecureTokenBox from "./SecureTokenBox";
 
 export default function BuyQuoteBox() {
-  /* Formatting Variables - refs to scroll to headers, adding bottom padding conditionally */
-  const buyOptionsHeaderRef = useRef<HTMLElement | null>(null);
-  const buyQuoteHeaderRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    buyOptionsHeaderRef.current = document.getElementById("buyOptionsHeader");
-    buyQuoteHeaderRef.current = document.getElementById("buyQuoteHeader");
-  }, []); // Empty dependency array ensures this runs once after initial render
+  /* refs to scroll to headers */
+  const buyOptionsHeaderRef = useRef<HTMLDivElement | null>(null);
+  const buyQuoteHeaderRef = useRef<HTMLDivElement | null>(null);
 
   /* Buy Configuration Response State */
   const [buyConfig, setBuyConfig] = useState<BuyConfigResponse>();
@@ -218,7 +213,7 @@ export default function BuyQuoteBox() {
       <BuyConfigBox buyConfig={buyConfig} setBuyConfig={setBuyConfig} />
 
       {/* Buy Options Card Box */}
-      <Card id="buyOptionsHeader" className="mt-5">
+      <Card ref={buyOptionsHeaderRef} className="mt-5">
         {/* Buy Options Header */}
         <div className={`flex flex-col p-10 gap-1 ${buyConfig ? "pb-5" : ""}`}>
           <h1
@@ -333,7 +328,7 @@ export default function BuyQuoteBox() {
       </Card>
 
       {/* Generate Buy Quote Card Box */}
-      <Card id="buyQuoteHeader" className="mt-5 flex flex-col">
+      <Card ref={buyQuoteHeaderRef} className="mt-5 flex flex-col">
         {/* Buy Quote Header */}
         <div
           className={`flex flex-col p-10 gap-1 ${
