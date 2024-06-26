@@ -9,7 +9,7 @@ export default async function handler(
   const {url, jwt} = await createRequest({request_method, request_path: "/onramp/v1/buy/config"});
 
   await fetch(url, {
-    method: "GET",
+    method: request_method,
     headers: { Authorization: "Bearer " + jwt },
   })
     .then((response) => {return response.json()})

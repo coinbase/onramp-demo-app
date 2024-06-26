@@ -28,7 +28,7 @@ export default async function handler(
   }
 
   await fetch(url, {
-    method: "POST",
+    method: request_method,
     body: JSON.stringify(body),
     headers: { Authorization: "Bearer " + jwt },
   })
