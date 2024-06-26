@@ -8,6 +8,12 @@ export type AggregatorInputParams = {
     presentFiatAmount: string,
 }
 
+export type GenerateSecureTokenRequest = {
+    aggregatorInputs?: AggregatorInputParams, 
+    showBuyQuoteURLText?: boolean, 
+    blockchains?: string[]
+}
+
 export type BuyConfigResponse = {
     "countries": {
         "id": string,

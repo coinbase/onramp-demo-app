@@ -1,5 +1,4 @@
 import {nextui} from '@nextui-org/theme'
-const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

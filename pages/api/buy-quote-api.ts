@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { SignOptions, sign } from "jsonwebtoken";
-import crypto from "crypto";
+import { createRequest } from "./helpers";
 
 type BuyQuoteRequest = {
   purchase_currency: string;
@@ -15,37 +14,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const key = await import('../../api_keys/cdp_api_key.json');
-  const key_name = key.name;
-  const key_secret = key.privateKey;
   const request_method = "POST";
-  const host = "api.developer.coinbase.com";
-  const request_path = "/onramp/v1/buy/quote";
-  const url = `https://${host}${request_path}`;
-
-  const uri = request_method + " " + host + request_path;
-
-  const payload = {
-    iss: "coinbase-cloud",
-    nbf: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 120, 
-    sub: key_name,
-    uri,
-  };
-
-  const signOptions: SignOptions = {
-    algorithm: "ES256",
-    header: {
-      kid: key_name,
-      nonce: crypto.randomBytes(16).toString("hex"), // non-standard, coinbase-specific header that is necessary
-    },
-  }
-
-  const jwt = sign(
-    payload,
-    key_secret,
-    signOptions,
-  );
+  const {url, jwt} = await createRequest({request_method, request_path: "/onramp/v1/buy/quote"})
 
   const reqBody = JSON.parse(req.body);
   const body: BuyQuoteRequest = {
@@ -57,7 +27,7 @@ export default async function handler(
     payment_network: reqBody.payment_network,
   }
 
-  fetch(url, {
+  await fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { Authorization: "Bearer " + jwt },

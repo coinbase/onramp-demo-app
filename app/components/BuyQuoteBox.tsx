@@ -1,22 +1,30 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
-import { Divider } from "@nextui-org/divider";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, Link, Tooltip } from "@nextui-org/react";
 import {Select, SelectItem} from "@nextui-org/select";
 import { BuyConfigResponse, BuyOptionsRequest, BuyOptionsResponse, BuyQuoteRequest, BuyQuoteResponse} from "../utils/types";
 import { generateBuyOptions, generateBuyQuote } from "../utils/queries";
 import ReactJson from "react-json-view";
 import { BuyConfigBox } from "./BuyConfigBox";
-import { scrollToHeader } from "../utils/helpers";
 import SecureTokenBox from "./SecureTokenBox";
-import { Accordion } from '@nextui-org/react';
 
 
 export default function BuyQuoteBox() {
 
+    /* Formatting Variables - refs to scroll to headers, adding bottom padding conditionally */
+    const buyOptionsHeaderRef = useRef<HTMLElement | null>(null);
+    const buyQuoteHeaderRef = useRef<HTMLElement | null>(null);
+
+    useEffect(() => {
+        buyOptionsHeaderRef.current = document.getElementById('buyOptionsHeader');
+        buyQuoteHeaderRef.current = document.getElementById('buyQuoteHeader');
+    }, []); // Empty dependency array ensures this runs once after initial render
+
     /* Buy Configuration Response State */
     const [buyConfig, setBuyConfig] = useState<BuyConfigResponse>();
+
+    
 
     // buy quote loading state 
     // expand for the rest of the options or not -> disabled if prev section not complete (display tooltip)
@@ -122,8 +130,12 @@ export default function BuyQuoteBox() {
             alert("Please fill out all required fields");
             return;
         }
-        if (parseInt(buyQuoteParams.payment_amount) < parseInt(payment_amount_limits.min) || 
-            parseInt(buyQuoteParams.payment_amount) > parseInt(payment_amount_limits.max)) {
+
+        const paymentAmount = parseInt(buyQuoteParams.payment_amount);
+        const minPaymentAmount = parseInt(payment_amount_limits.min);
+        const maxPaymentAmount = parseInt(payment_amount_limits.max);
+        
+        if (paymentAmount < minPaymentAmount || paymentAmount > maxPaymentAmount) {
             alert(`Payment amount for currency '${buyQuoteParams.payment_currency} - ${buyQuoteParams.payment_method}' must be between ${payment_amount_limits.min} and ${payment_amount_limits.max}`);
             return;
         }
@@ -172,9 +184,9 @@ export default function BuyQuoteBox() {
             {/* Buy Options Card Box */}
             <Card id="buyOptionsHeader" className="mt-5" >
                 {/* Buy Options Header */}
-                <div className={buyConfig ? "flex flex-col p-10 pb-5 gap-1" : "flex flex-col p-10 gap-1"}>
+                <div className={`flex flex-col p-10 gap-1 ${buyConfig ? 'pb-5' : ''}`}>
                     <h1 
-                        onClick={() => scrollToHeader("buyOptionsHeader")} 
+                        onClick={() => buyOptionsHeaderRef.current?.scrollIntoView({ behavior: 'smooth' })} 
                         className="font-bold"> 
                         2. Generate Buy Options: 
                     </h1>
@@ -235,8 +247,8 @@ export default function BuyQuoteBox() {
             {/* Generate Buy Quote Card Box */}
             <Card id="buyQuoteHeader" className="mt-5 flex flex-col">
                 {/* Buy Quote Header */}
-                <div className={buyOptionsResponse ? "flex flex-col p-10 pb-5 gap-1" : "flex flex-col p-10 gap-1"}>
-                    <h1 onClick={() => scrollToHeader("buyQuoteHeader")} className="font-bold"> 3. Generate Buy Quote: </h1>
+                <div className={`flex flex-col p-10 gap-1 ${buyOptionsResponse ? 'pb-5' : ''}`}>
+                    <h1 onClick={() => buyQuoteHeaderRef.current?.scrollIntoView({ behavior: 'smooth' })} className="font-bold"> 3. Generate Buy Quote: </h1>
                     <h2> 
                         The <Link href="https://docs.cdp.coinbase.com/onramp/docs/api-generating-quotes/" isExternal> Buy Quote API </Link> provides clients with a quote based on the asset the user would like to purchase, 
                         the network they plan to purchase it on, the dollar amount of the payment, the payment currency, 
