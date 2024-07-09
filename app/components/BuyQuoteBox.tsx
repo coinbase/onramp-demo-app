@@ -22,6 +22,15 @@ import ReactJson from "react-json-view";
 import { BuyConfigBox } from "./BuyConfigBox";
 import SecureTokenBox from "./SecureTokenBox";
 
+const emptyBuyQuoteParams: BuyQuoteRequest = {
+  purchase_currency: "",
+  payment_currency: "",
+  payment_method: "",
+  country: "",
+  payment_amount: "",
+  purchase_network: "",
+};
+
 export default function BuyQuoteBox() {
   /* refs to scroll to headers */
   const buyOptionsHeaderRef = useRef<HTMLDivElement | null>(null);
@@ -29,9 +38,6 @@ export default function BuyQuoteBox() {
 
   /* Buy Configuration Response State */
   const [buyConfig, setBuyConfig] = useState<BuyConfigResponse>();
-
-  // buy quote loading state
-  // expand for the rest of the options or not -> disabled if prev section not complete (display tooltip)
 
   /* Buy Options API Variables - Request & Response payloads, Loading state, List of country/subdiv options */
   // request parameters and onChange wrapper function
@@ -66,15 +72,6 @@ export default function BuyQuoteBox() {
         }) || []
     );
   }, [buy_options_countries, buyOptionsParams.country]);
-
-  const emptyBuyQuoteParams = {
-    purchase_currency: "",
-    payment_currency: "",
-    payment_method: "",
-    country: "",
-    payment_amount: "",
-    purchase_network: "",
-  };
 
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
 

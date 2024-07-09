@@ -27,26 +27,4 @@ export default async function handler(
     body: JSON.stringify(body),
     res,
   });
-
-  // fetch(url, {
-  //   method: request_method,
-  //   body: JSON.stringify(body),
-  //   headers: { Authorization: "Bearer " + jwt },
-  // })
-  //   .then((response) => {
-  //     return response.json();
-  //   })
-  //   .then((json) => {
-  //     if (json.message) {
-  //       console.error("Error:", json.message);
-  //       res.status(500).json({ error: json.message });
-  //     } else {
-  //       console.log(json);
-  //       res.status(200).json({ token: json.token });
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.log("Caught error: ", error);
-  //     res.status(500);
-  //   });
 }

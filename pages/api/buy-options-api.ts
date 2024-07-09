@@ -1,12 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createRequest, fetchOnrampRequest } from "./helpers";
+import { BuyOptionsRequest } from "@/app/utils/types";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const reqBody = JSON.parse(req.body);
-  const body = {
+  const body: BuyOptionsRequest = {
     country: reqBody.country,
     subdivision: reqBody.subdivision,
   };
