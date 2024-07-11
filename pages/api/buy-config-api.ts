@@ -5,26 +5,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const request_method = "POST";
+  const request_method = "GET";
   const { url, jwt } = await createRequest({
     request_method,
-    request_path: "/onramp/v1/token",
+    request_path: "/onramp/v1/buy/config",
   });
-  const reqBody = JSON.parse(req.body);
-  const body = {
-    destination_wallets: [
-      {
-        address: reqBody.ethAddress,
-        blockchains: reqBody.blockchains || ["base", "ethereum"],
-      },
-    ],
-  };
 
   await fetchOnrampRequest({
     request_method,
     url,
     jwt,
-    body: JSON.stringify(body),
     res,
   });
 }
