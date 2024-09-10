@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Tabs, Tab, Card, Link } from "@nextui-org/react";
 import SecureTokenBox from "./components/SecureTokenBox";
 import BuyQuoteBox from "./components/BuyQuoteBox";
+import SellQuoteBox from "./components/SellQuoteBox";
+import WalletBox from "./components/WalletBox";
 
 export default function Home() {
   return (
@@ -69,6 +71,9 @@ export default function Home() {
           </Tab>
           <Tab key="buyQuote" title="Generate Onramp Aggregator URL">
             <BuyQuoteBox />
+          </Tab>
+          <Tab key="sellQuote" title="Generate Offramp Aggregator URL">
+            <SellQuoteBox />
           </Tab>
         </Tabs>
       </div>

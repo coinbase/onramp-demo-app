@@ -10,6 +10,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@coinbase/coinbase-sdk": "^0.1.1",
 		"@nextui-org/button": "^2.0.31",
 		"@nextui-org/code": "^2.0.27",
 		"@nextui-org/divider": "^2.0.27",
@@ -54,5 +55,9 @@
 	"engines": {
 		"node": ">=20.0.0",
 		"yarn": ">=1.22.22"
-	}
+	},
+	"description": "## Introduction Welcome to Coinbase Onramp! This demo app will get you up and running with a basic API integration with Coinbase Onramp.",
+	"main": "next.config.js",
+	"keywords": [],
+	"author": ""
 }
