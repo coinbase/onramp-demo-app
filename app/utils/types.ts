@@ -26,6 +26,7 @@ export type BuyConfigResponse = {
 export type BuyOptionsRequest = {
   country: string;
   subdivision?: string;
+  networks?: string[];
 };
 
 export type BuyOptionsResponse = {
@@ -81,5 +82,75 @@ export type BuyQuoteResponse = {
   payment_subtotal: { value: string; currency: string };
   payment_total: { value: string; currency: string };
   purchase_amount: { value: string; currency: string };
+  quote_id: string;
+};
+
+export type SellConfigResponse = {
+  countries: {
+    id: string;
+    subdivisions: string[];
+    payment_methods: string[];
+  }[];
+};
+
+export type SellOptionsRequest = {
+  country: string;
+  subdivision?: string;
+  networks?: string[];
+};
+
+export type SellOptionsResponse = {
+  cashout_currencies: {
+    id: string;
+    limits: [
+      {
+        id: string;
+        min: string;
+        max: string;
+      },
+      {
+        id: string;
+        min: string;
+        max: string;
+      }
+    ];
+  }[];
+
+  sell_currencies: {
+    id: string;
+    name: string;
+    symbol: string;
+    networks: [
+      {
+        name: string;
+        display_name: string;
+        chain_id: string;
+        contract_address: string;
+      },
+      {
+        name: string;
+        display_name: string;
+        chain_id: string;
+        contract_address: string;
+      }
+    ];
+  }[];
+};
+
+export type SellQuoteRequest = {
+  sell_currency: string;
+  sell_amount: string;
+  cashout_currency: string;
+  payment_method: string;
+  country: string;
+  sell_network?: string;
+  subdivision?: string;
+};
+
+export type SellQuoteResponse = {
+  coinbase_fee: { value: string; currency: string };
+  cashout_subtotal: { value: string; currency: string };
+  cashout_total: { value: string; currency: string };
+  sell_amount: { value: string; currency: string };
   quote_id: string;
 };

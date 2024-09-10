@@ -57,7 +57,7 @@ export function BuyConfigBox({
           {" "}
           Buy Config API{" "}
         </Link>{" "}
-        returns the list of countries supported by Coinbase Onramp, and the
+        returns the list of countries supported by Coinbase Onramp Buy, and the
         payment methods available in each country.
       </h2>
       <div className="flex flex-row w-full justify-center gap-10 mt-5">
