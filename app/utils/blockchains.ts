@@ -1,5 +1,9 @@
 export const BLOCKCHAIN_LIST = [
     {
+      name: "Base",
+      id: "base"
+    },
+    {
       name: "Bitcoin",
       id: "bitcoin"
     },
@@ -62,10 +66,6 @@ export const BLOCKCHAIN_LIST = [
     {
       name: "Bitcoin Cash",
       id: "bitcoincash"
-    },
-    {
-      name: "Base",
-      id: "base"
     },
     {
       name: "Flow",

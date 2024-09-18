@@ -1,11 +1,7 @@
 "use client";
 import Image from "next/image";
-
-import { Tabs, Tab, Card, Link } from "@nextui-org/react";
-import SecureTokenBox from "./components/SecureTokenBox";
-import BuyQuoteBox from "./components/BuyQuoteBox";
-import SellQuoteBox from "./components/SellQuoteBox";
-import WalletBox from "./components/WalletBox";
+import { Card, Link } from "@nextui-org/react";
+import WalletBox from "../components/WalletBox";
 
 export default function Home() {
   return (
@@ -45,9 +41,8 @@ export default function Home() {
               inside your onramp-demo-app repo.
             </p>
             <p className="text-lg">
-              4. When creating your aggregator URL, first generate a buy config,
-              then buy options, and finally generate a buy quote. Only then, can
-              you input your wallet address and receive your One-Click-Buy link.
+              4. Copy the developer <b>project id</b> to{" "}
+              <b>app_id/app_id.json</b>, and add unique <b>user_id</b> for test
             </p>
           </div>
         </div>
@@ -65,20 +60,7 @@ export default function Home() {
       </Card>
 
       <div className="flex w-full flex-col gap-5">
-        <Tabs aria-label="Options">
-          <Tab key="wallet" title="Generate an Wallet for test">
-            <WalletBox />
-          </Tab>
-          <Tab key="genToken" title="Generate Onramp URL">
-            <SecureTokenBox />
-          </Tab>
-          <Tab key="buyQuote" title="Generate Onramp Aggregator URL">
-            <BuyQuoteBox />
-          </Tab>
-          <Tab key="sellQuote" title="Generate Offramp Aggregator URL">
-            <SellQuoteBox />
-          </Tab>
-        </Tabs>
+        <WalletBox />
       </div>
     </div>
   );

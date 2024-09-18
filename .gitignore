@@ -36,3 +36,4 @@ next-env.d.ts
 
 # CDP API keys
 api_keys/*.json
+wallet_seed/*json
