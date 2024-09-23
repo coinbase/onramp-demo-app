@@ -154,3 +154,45 @@ export type SellQuoteResponse = {
   sell_amount: { value: string; currency: string };
   quote_id: string;
 };
+
+export type GenerateWalletRequest = {
+  network_id: string;
+};
+export type GenerateWalletResponse = {
+  wallet_address: string;
+  network_id: string;
+  balance: string;
+};
+
+export type OfframpTransactions = {
+  transaction_id: string;
+  status: number;
+  asset: string;
+  network: string;
+  sell_amount: { value: string; currency: string };
+  total: { value: string; currency: string };
+  to_address: string;
+};
+
+export type SellTransactionStatusRequest = {
+  partner_user_id: string;
+};
+
+export type SellTransactionStatusResponse = {
+  transactions: OfframpTransactions[];
+  next_page_key: string;
+  total_count: number;
+};
+
+export type CreateTransferRequest = {
+  network: string;
+  amount: number;
+  assetId: string;
+  destination: string;
+};
+
+export type CreateTransferResponse = {
+  id: string;
+  status: string;
+  txh: string;
+};

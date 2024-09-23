@@ -8,6 +8,12 @@ import {
   SellOptionsResponse,
   SellQuoteRequest,
   SellQuoteResponse,
+  GenerateWalletResponse,
+  GenerateWalletRequest,
+  SellTransactionStatusRequest,
+  SellTransactionStatusResponse,
+  CreateTransferRequest,
+  CreateTransferResponse,
 } from "./types";
 
 export async function generateSecureToken({
@@ -138,7 +144,7 @@ export async function generateSellOptions({
     }
 
     const json: SellOptionsResponse = await response.json();
-    const  cashcout_currencies = json.cashout_currencies.map((currency) => ({
+    const cashcout_currencies = json.cashout_currencies.map((currency) => ({
       name: currency.id,
     }));
     const sell_currencies = json.sell_currencies.map((currency) => ({
@@ -164,6 +170,71 @@ export async function generateSellQuote(request: SellQuoteRequest) {
     }
 
     const json: SellQuoteResponse = await response.json();
+    return json;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function generateWallet(request: GenerateWalletRequest) {
+  try {
+    console.log(`generateWallet`);
+    const response = await fetch("/api/create-wallet-api", {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      throw new Error("Failed to create wallet");
+    }
+
+    const json: GenerateWalletResponse = await response.json();
+    return json;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getSellTransactionStatus(
+  request: SellTransactionStatusRequest
+) {
+  try {
+    console.log("getSellTransactionStatus");
+    const response = await fetch("/api/sell-transaction-status-api", {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      throw new Error("Failed to fetch sell transaction");
+    }
+
+    const transactionResponse: SellTransactionStatusResponse = await response.json();
+    for (var transaction of transactionResponse.transactions) {
+      if ((transaction.status = 3)) return transaction;
+    }
+    return undefined;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function createTransfer(request: CreateTransferRequest) {
+  try {
+    console.log(`createTransfer`);
+    const response = await fetch("/api/create-transfer-api", {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      throw new Error("Failed to create transfer");
+    }
+    const json: CreateTransferResponse = await response.json();
+
     return json;
   } catch (error) {
     throw error;
