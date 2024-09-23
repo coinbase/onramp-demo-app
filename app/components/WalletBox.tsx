@@ -1,7 +1,7 @@
 import { Textarea } from "@nextui-org/input";
 import { Button, Card, Link, Select, SelectItem } from "@nextui-org/react";
 import { useState, useCallback, ChangeEvent, useMemo } from "react";
-import { project_id, user_id } from "../../app_id/app_id.json";
+import appInfo from "../../app_id/app_id.json";
 import { generateWallet } from "../utils/queries";
 import { NETWORK_LIST } from "../utils/networks";
 
@@ -42,7 +42,7 @@ export default function WalletBox() {
   const generateOnrampLink = useCallback(async () => {
     let shorten_network = network.split("-")[0];
     setOnrampLink(
-      `https://pay.coinbase.com/buy/select-asset?appId=${project_id}` +
+      `https://pay.coinbase.com/buy/select-asset?appId=${appInfo.project_id}` +
         `&addresses={"${address}":["${shorten_network}"]}`
     );
   }, [address, network]);
@@ -50,10 +50,10 @@ export default function WalletBox() {
   const generateOfframpLink = useCallback(async () => {
     let shorten_network = network.split("-")[0];
     setOfframpLink(
-      `https://pay.coinbase.com/v3/offramp/input?appId=${project_id}` +
-        `&addresses={"${address}":["${shorten_network}"]}&redirectUrl=${redirectUrl}&partnerUserId=${user_id}`
+      `https://pay.coinbase.com/v3/sell/input?appId=${appInfo.project_id}` +
+        `&addresses={"${address}":["${shorten_network}"]}&redirectUrl=${redirectUrl}&partnerUserId=${appInfo.user_id}`
     );
-  }, [address, network, user_id]);
+  }, [address, network, appInfo.user_id]);
 
   const launch_onramp = useCallback(() => {
     open(onramp_link, "_blank", "popup,width=540,height=700");

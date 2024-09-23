@@ -205,7 +205,7 @@ export async function getSellTransactionStatus(
       method: "POST",
       body: JSON.stringify(request),
     });
-    console.log(response);
+
     if (!response.ok) {
       console.log(await response.text());
       throw new Error("Failed to fetch sell transaction");
@@ -234,7 +234,6 @@ export async function createTransfer(request: CreateTransferRequest) {
       throw new Error("Failed to create transfer");
     }
     const json: CreateTransferResponse = await response.json();
-    console.log(`response ${json.id}`);
 
     return json;
   } catch (error) {

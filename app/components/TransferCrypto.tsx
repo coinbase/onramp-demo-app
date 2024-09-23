@@ -1,7 +1,7 @@
 import { Textarea } from "@nextui-org/input";
 import { Button, Card, Link } from "@nextui-org/react";
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { user_id } from "../../app_id/app_id.json";
+import appInfo from "../../app_id/app_id.json";
 import { getSellTransactionStatus, createTransfer } from "../utils/queries";
 
 export default function TransferCryptoBox() {
@@ -15,12 +15,10 @@ export default function TransferCryptoBox() {
   useEffect(() => {
     const getOfframpTransaction = async () => {
       const transaction = await getSellTransactionStatus({
-        partner_user_id: user_id,
+        partner_user_id: appInfo.user_id,
       });
       try {
         if (transaction) {
-          console.log(transaction);
-          console.log(transaction.asset);
           setAmount(+transaction.sell_amount.value);
           setAsset(transaction.asset);
           // format the network name (e.g. "network/base-mainnet" -> "base-mainnet")
