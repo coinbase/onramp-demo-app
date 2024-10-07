@@ -7,7 +7,7 @@ type BuyQuoteRequest = {
   payment_currency: string;
   payment_method: string;
   country: string;
-  payment_network?: string;
+  purchase_network?: string;
 };
 
 export default async function handler(
@@ -27,7 +27,7 @@ export default async function handler(
     payment_currency: reqBody.payment_currency,
     payment_method: reqBody.payment_method,
     country: reqBody.country,
-    payment_network: reqBody.payment_network,
+    purchase_network: reqBody.payment_network,
   };
 
   await fetchOnrampRequest({
