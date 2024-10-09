@@ -41,8 +41,17 @@ export default function Home() {
               inside your onramp-demo-app repo.
             </p>
             <p className="text-lg">
-              4. Copy the developer <b>project id</b> to{" "}
+              4. Go to {" "}
+              <Link
+                href="https://portal.cdp.coinbase.com/projects/"
+                isExternal
+              >
+                {" "}onramp portal 
+              </Link>{" "}, Copy the developer <b>project id</b> to{" "}
               <b>app_id/app_id.json</b>, and add unique <b>user_id</b> for test
+            </p>
+            <p className="text-lg">
+              5. If want to integrate with offramp, ping us in discord, we will grant your account test permission.
             </p>
           </div>
         </div>

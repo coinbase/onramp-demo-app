@@ -45,7 +45,20 @@ export default function Home() {
               inside your onramp-demo-app repo.
             </p>
             <p className="text-lg">
-              4. When creating your aggregator URL, first generate a buy config,
+              4. Go to {" "}
+              <Link
+                href="https://portal.cdp.coinbase.com/projects/"
+                isExternal
+              >
+                {" "}onramp portal 
+              </Link>{" "}, Copy the developer <b>project id</b> to{" "}
+              <b>app_id/app_id.json</b>, and add unique <b>user_id</b> for test
+            </p>
+            <p className="text-lg">
+              5. If want to integrate with offramp, ping us in discord, we will grant your account test permission.
+            </p>
+            <p className="text-lg">
+              6. When creating your aggregator URL, first generate a buy config,
               then buy options, and finally generate a buy quote. Only then, can
               you input your wallet address and receive your One-Click-Buy link.
             </p>
