@@ -27,7 +27,7 @@ export default async function handler(
     payment_currency: reqBody.payment_currency,
     payment_method: reqBody.payment_method,
     country: reqBody.country,
-    purchase_network: reqBody.payment_network,
+    purchase_network: reqBody.purchase_network,
   };
 
   await fetchOnrampRequest({
